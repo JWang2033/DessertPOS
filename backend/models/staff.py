@@ -1,11 +1,11 @@
 from sqlalchemy import Column, Integer, String
-from database import Base
+from backend.database import Base
 
 class Staff(Base):
-    __tablename__ = "staff"
+    __tablename__ = "staffs"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(50), unique=True, nullable=False, index=True)
+    username = Column(String(50), unique=True, index=True, nullable=False)
     password = Column(String(255), nullable=False)
-    full_name = Column(String(100))
-    role = Column(String(20), default="staff")  # 可选值如 "staff", "admin"
+    full_name = Column(String(100), nullable=False)
+    role = Column(String(50), nullable=False)

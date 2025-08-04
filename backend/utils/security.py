@@ -1,8 +1,9 @@
 # backend/utils/security.py
-
-from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
+
+from passlib.context import CryptContext
+
 
 # 密码加密配置
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -13,7 +14,8 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60  # token 有效期（分钟）
 
 # 加密密码
-def hash_password(password: str) -> str:
+
+def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 # 验证密码
