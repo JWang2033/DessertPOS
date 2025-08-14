@@ -1,0 +1,32 @@
+.
+├── README.md
+├── backend
+│   ├── __init__.py
+│   ├── config.py
+│   ├── crud
+│   │   ├── staff_crud.py
+│   │   └── user_crud.py
+│   ├── database.py
+│   ├── models
+│   │   ├── product.py
+│   │   ├── staff.py
+│   │   └── user.py
+│   ├── routers
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   ├── protected.py
+│   │   ├── staff_router.py
+│   │   ├── test_db.py
+│   │   └── user_router.py
+│   ├── schemas
+│   │   ├── __init__.py
+│   │   ├── staff_schemas.py
+│   │   └── user_schemas.py
+│   └── utils
+│       ├── auth_dependencies.py
+│       └── security.py
+├── main.py
+├── project_structure.txt
+└── requirements.txt
+
+7 directories, 23 files
