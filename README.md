@@ -45,11 +45,13 @@ pip install -r requirements.txt
 │       ├── auth_dependencies.py
 │       └── security.py
 ├── main.py
+├── order_tables.sql
+├── product_tables.sql
 ├── project_structure.txt
 ├── requirements.txt
 └── update_db_structure.py
 
-7 directories, 24 files
+7 directories, 26 files
 ```
 <!-- tree:end -->
 
