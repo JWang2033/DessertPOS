@@ -11,6 +11,9 @@ source venv/bin/activate
 
 # 安装依赖
 pip install -r requirements.txt
+
+#启动
+./venv/bin/uvicorn main:app --reload
 ```
 
 ## 项目结构
