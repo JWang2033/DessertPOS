@@ -6,6 +6,8 @@ from backend.database import SessionLocal
 from backend.crud import staff_crud
 from backend.utils.security import SECRET_KEY, ALGORITHM
 from sqlalchemy.orm import Session
+from typing import Iterable
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login/staff")
 
@@ -33,3 +35,19 @@ def get_current_staff(token: str = Depends(oauth2_scheme), db: Session = Depends
     if staff is None:
         raise credentials_exception
     return staff
+
+def require_role(roles: Iterable[str]):
+    """
+    依赖工厂：检查当前登录用户是否属于给定角色之一。
+    用法：Depends(require_role(["manager", "kitchen"]))
+    """
+    roles_set = set(r.lower() for r in roles)
+
+    def checker(current_staff = Depends(get_current_staff)):
+        if current_staff.role.lower() not in roles_set:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Insufficient privileges: requires one of {sorted(roles_set)}"
+            )
+        return current_staff  # 可在路由中继续使用当前用户
+    return checker
