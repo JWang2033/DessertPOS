@@ -1,9 +1,8 @@
 from fastapi import FastAPI
-from backend.routers import auth, test_db, protected
+from backend.routers import auth, protected, staff_router, test
 
 
 app = FastAPI()
-
-app.include_router(auth.router)
-app.include_router(test_db.router)
+app.include_router(staff_router.router)
 app.include_router(protected.router)
+app.include_router(test.router)

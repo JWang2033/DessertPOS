@@ -1,20 +1,27 @@
-# from sqlalchemy.orm import Session
-# from backend.models.user import User
-# from backend.schemas.user_schemas import UserCreate
-# from backend.utils.security import get_password_hash
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException
 
-# def get_user_by_username(db: Session, username: str):
-#     return db.query(User).filter(User.username == username).first()
+from backend.models.user import User
 
-# def create_user(db: Session, user: UserCreate):
-#     hashed_password = get_password_hash(user.password)
-#     db_user = User(
-#         username=user.username,
-#         password=hashed_password,
-#         full_name=user.full_name,
-#         phone=user.phone
-#     )
-#     db.add(db_user)
-#     db.commit()
-#     db.refresh(db_user)
-#     return db_user
+def get_user_by_phone(db: Session, phone: str) -> User | None:
+    return db.query(User).filter(User.phone_number == phone).first()
+
+def get_user_by_id(db: Session, user_id: int) -> User | None:
+    return db.query(User).filter(User.id == user_id).first()
+
+def create_user(db: Session, username: str, phone_number: str, prefer_name: str | None = None) -> User:
+    user = User(
+        username=username,
+        phone_number=phone_number,
+        prefer_name=prefer_name
+    )
+    db.add(user)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        # 与唯一约束冲突时抛出更友好的错误
+        raise HTTPException(status_code=400, detail="Phone number already registered")
+    db.refresh(user)
+    return user

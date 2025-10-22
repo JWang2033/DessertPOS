@@ -38,7 +38,7 @@ pip install -r requirements.txt
 │   │   ├── auth.py
 │   │   ├── protected.py
 │   │   ├── staff_router.py
-│   │   ├── test_db.py
+│   │   ├── test.py
 │   │   └── user_router.py
 │   ├── schemas
 │   │   ├── __init__.py
