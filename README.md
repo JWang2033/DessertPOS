@@ -30,7 +30,6 @@ pip install -r requirements.txt
 │   │   └── user_crud.py
 │   ├── database.py
 │   ├── models
-│   │   ├── product.py
 │   │   ├── staff.py
 │   │   └── user.py
 │   ├── routers
@@ -54,7 +53,7 @@ pip install -r requirements.txt
 ├── requirements.txt
 └── update_db_structure.py
 
-7 directories, 26 files
+7 directories, 25 files
 ```
 <!-- tree:end -->
 
