@@ -1,26 +1,41 @@
-# backend/schemas/user_schemas.py
-from pydantic import BaseModel, constr
+from pydantic import BaseModel
 
-class StartLoginRequest(BaseModel):
-    phone_number: constr(min_length=4, max_length=20)
+# -------------------
+# 输入模型
+# -------------------
+class UserCreate(BaseModel):
+    username: str
+    prefer_name: str | None = None
+    phone_number: str
 
-class StartLoginResponse(BaseModel):
-    exists: bool
-    otp_ttl: int
-    resend_after: int
+# ===== 请求模型（JSON Body 用） =====
+class SendCodeRequest(BaseModel):
+    phone_number: str
 
-class VerifyRequest(BaseModel):
-    phone_number: constr(min_length=4, max_length=20)
-    code: constr(min_length=4, max_length=6)
-    # 新用户用到；老用户可不传
-    username: constr(min_length=1, max_length=50) | None = None
-    prefer_name: constr(max_length=50) | None = None
+class LoginRequest(BaseModel):
+    phone_number: str
+    code: str
 
+class RegisterRequest(BaseModel):
+    username: str
+    prefer_name: str | None = None
+
+
+# ===== 响应模型 =====
 class UserOut(BaseModel):
     id: int
     username: str
-    phone_number: str
     prefer_name: str | None = None
-    access_token: str
+    phone_number: str
+
     class Config:
-        from_attributes = True
+        orm_mode = True  # Pydantic v1；如果是v2用 from_attributes = True
+
+
+class TokenOut(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+
+class LoginResponse(TokenOut):
+    user: UserOut
