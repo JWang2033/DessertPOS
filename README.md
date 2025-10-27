@@ -16,7 +16,7 @@ pip install -r requirements.txt
 ./venv/bin/uvicorn main:app --reload
 ```
 # 项目文件链接
-📘 [项目文档]（https://docs.google.com/document/d/1oBlNTuQLjn1SoEjSKF-DmitteNOKP-ZGoaTWVWrIbbo/edit?pli=1&tab=t.0)
+📘 [项目文档](https://docs.google.com/document/d/1oBlNTuQLjn1SoEjSKF-DmitteNOKP-ZGoaTWVWrIbbo/edit?pli=1&tab=t.0)
 
 ## 项目结构
 
