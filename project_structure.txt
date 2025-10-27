@@ -1,5 +1,4 @@
 .
-├── README.md
 ├── backend
 │   ├── __init__.py
 │   ├── config.py
@@ -8,6 +7,7 @@
 │   │   └── user_crud.py
 │   ├── database.py
 │   ├── models
+│   │   ├── role.py
 │   │   ├── staff.py
 │   │   └── user.py
 │   ├── routers
@@ -28,7 +28,8 @@
 ├── order_tables.sql
 ├── product_tables.sql
 ├── project_structure.txt
+├── README.md
 ├── requirements.txt
 └── update_db_structure.py
 
-7 directories, 25 files
+7 directories, 26 files

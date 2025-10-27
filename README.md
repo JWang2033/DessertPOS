@@ -21,7 +21,6 @@ pip install -r requirements.txt
 <!-- tree:start -->
 ```
 .
-├── README.md
 ├── backend
 │   ├── __init__.py
 │   ├── config.py
@@ -30,6 +29,7 @@ pip install -r requirements.txt
 │   │   └── user_crud.py
 │   ├── database.py
 │   ├── models
+│   │   ├── role.py
 │   │   ├── staff.py
 │   │   └── user.py
 │   ├── routers
@@ -50,10 +50,11 @@ pip install -r requirements.txt
 ├── order_tables.sql
 ├── product_tables.sql
 ├── project_structure.txt
+├── README.md
 ├── requirements.txt
 └── update_db_structure.py
 
-7 directories, 25 files
+7 directories, 26 files
 ```
 <!-- tree:end -->
 
@@ -139,6 +140,17 @@ pip install -r requirements.txt
 
 ---
 
+### `permissions` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
+|--------|------|------|------|--------|------|
+| id | bigint | ✅ | ❌ |  |  |
+| code | varchar(128) |  | ❌ |  |  |
+| name | varchar(128) |  | ❌ |  |  |
+| description | varchar(255) |  | ✅ |  |  |
+
+---
+
 ### `product_ingredients` 表结构
 
 | 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
@@ -185,6 +197,26 @@ pip install -r requirements.txt
 
 ---
 
+### `role_permissions` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
+|--------|------|------|------|--------|------|
+| role_id | bigint | ✅ | ❌ |  |  |
+| permission_id | bigint | ✅ | ❌ |  |  |
+
+---
+
+### `roles` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
+|--------|------|------|------|--------|------|
+| id | bigint | ✅ | ❌ |  |  |
+| code | varchar(64) |  | ❌ |  |  |
+| name | varchar(128) |  | ❌ |  |  |
+| description | varchar(255) |  | ✅ |  |  |
+
+---
+
 ### `semifinished` 表结构
 
 | 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
@@ -197,6 +229,15 @@ pip install -r requirements.txt
 | status | tinyint |  | ❌ | 1 | 1=active,0=inactive |
 | created_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
 | updated_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
+
+---
+
+### `staff_roles` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
+|--------|------|------|------|--------|------|
+| staff_id | int | ✅ | ❌ |  |  |
+| role_id | bigint | ✅ | ❌ |  |  |
 
 ---
 
