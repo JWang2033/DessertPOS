@@ -1,3 +1,4 @@
+# backend/crud/staff_crud.py
 from sqlalchemy.orm import Session
 from backend.models.staff import Staff
 from backend.schemas.staff_schemas import StaffCreate
@@ -22,7 +23,7 @@ def create_staff(db: Session, staff: StaffCreate):
         password=hashed_password,
         full_name=staff.full_name,
         email=staff.email,
-        phone=staff.phone
+        phone=staff.phone,
     )
     db.add(db_staff)
     db.commit()

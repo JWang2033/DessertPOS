@@ -38,6 +38,7 @@ pip install -r requirements.txt
 │   │   ├── __init__.py
 │   │   ├── auth.py
 │   │   ├── protected.py
+│   │   ├── rbac_router.py
 │   │   ├── staff_router.py
 │   │   ├── test.py
 │   │   └── user_router.py
@@ -56,7 +57,7 @@ pip install -r requirements.txt
 ├── requirements.txt
 └── update_db_structure.py
 
-7 directories, 26 files
+7 directories, 27 files
 ```
 <!-- tree:end -->
 
