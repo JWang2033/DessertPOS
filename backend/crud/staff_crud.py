@@ -5,13 +5,15 @@ from backend.utils.security import get_password_hash
 
 def get_staff_by_username(db: Session, username: str):
     return db.query(Staff).filter(Staff.username == username).first()
-def get_staff_by_email(db:Session, email: str):
+
+def get_staff_by_email(db: Session, email: str):
     return db.query(Staff).filter(Staff.email == email).first()
-def get_staff_by_phone(db: Session, phone:str):
+
+def get_staff_by_phone(db: Session, phone: str):
     return db.query(Staff).filter(Staff.phone == phone).first()
+
 def get_staff_by_id(db: Session, staff_id: int):
     return db.query(Staff).filter(Staff.id == staff_id).first()
-
 
 def create_staff(db: Session, staff: StaffCreate):
     hashed_password = get_password_hash(staff.password)
@@ -19,7 +21,6 @@ def create_staff(db: Session, staff: StaffCreate):
         username=staff.username,
         password=hashed_password,
         full_name=staff.full_name,
-        role=staff.role,
         email=staff.email,
         phone=staff.phone
     )

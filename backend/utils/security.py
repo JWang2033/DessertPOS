@@ -36,11 +36,11 @@ oauth2_user = OAuth2PasswordBearer(tokenUrl="/user/login")
 oauth2_staff = OAuth2PasswordBearer(tokenUrl="/staff/login")
 
 # 创建 JWT token
-def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
-    to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+# def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
+#     to_encode = data.copy()
+#     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+#     to_encode.update({"exp": expire})
+#     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 def create_access_token_v2(
     subject: str,                 # 形如 "staff:123" 或 "user:45"
     extra_claims: Optional[Dict[str, Any]] = None,
@@ -66,15 +66,15 @@ def create_access_token_v2(
         payload.update(extra_claims)
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
-# 解码 JWT token（可用于后续鉴权中间件）
-def decode_access_token(token: str) -> dict:
-    try:
-        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    except JWTError:
-        return None
+# # 解码 JWT token（可用于后续鉴权中间件）
+# def decode_access_token(token: str) -> dict:
+#     try:
+#         return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#     except JWTError:
+#         return None
 
 # 从header解码
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
 
 def decode_token_v2(token: str) -> Dict[str, Any]:
     """
@@ -88,15 +88,15 @@ def decode_token_v2(token: str) -> Dict[str, Any]:
             detail=f"Invalid or expired token: {e}",
         )
 
-def get_current_token_payload(token: str = Depends(oauth2_scheme)) -> dict:
-    """作为 FastAPI 依赖使用：从请求头读取 Bearer Token 并解码"""
-    try:
-        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
-        )
+# def get_current_token_payload(token: str = Depends(oauth2_scheme)) -> dict:
+#     """作为 FastAPI 依赖使用：从请求头读取 Bearer Token 并解码"""
+#     try:
+#         return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#     except JWTError:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Invalid or expired token",
+#         )
 
 def get_current_user_payload(token: str = Depends(oauth2_user)) -> Dict[str, Any]:
     """用户端：从 Authorization: Bearer 里解码 payload"""

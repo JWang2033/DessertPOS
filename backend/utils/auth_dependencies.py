@@ -39,8 +39,8 @@ def get_current_staff(
     if kind != "staff":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token not for staff")
 
-    staff = getattr(staff_crud, "get_staff_by_id", None)
-    if not callable(staff):
+    getter = getattr(staff_crud, "get_staff_by_id", None)
+    if not callable(getter):
         raise HTTPException(status_code=500, detail="get_staff_by_id not implemented in staff_crud")
     staff = staff_crud.get_staff_by_id(db, staff_id=sid)
     if staff is None:
@@ -54,14 +54,11 @@ def get_current_staff(
 # ------------------------
 def require_roles(roles: Iterable[str]):
     roles_set = {r.lower() for r in roles}
-
     def checker(current=Depends(get_current_staff), db: Session = Depends(get_db)):
-        # 1) 兼容旧 staffs.role（如果仍存在）
-        role_attr = getattr(current, "role", None)
-        if role_attr and role_attr.lower() in roles_set:
-            return current
+        # role_attr = getattr(current, "role", None)
+        # if role_attr and role_attr.lower() in roles_set:
+        #     return current
 
-        # 2) 新 RBAC：staff_roles -> roles
         codes = set(
             db.execute(
                 select(Role.code)
@@ -71,13 +68,9 @@ def require_roles(roles: Iterable[str]):
         )
         if codes & roles_set:
             return current
-
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Requires one of roles: {sorted(roles_set)}"
-        )
-
+        raise HTTPException(status_code=403, detail=f"Requires one of roles: {sorted(roles_set)}")
     return checker
+
 
 
 # ------------------------

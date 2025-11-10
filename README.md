@@ -250,7 +250,6 @@ pip install -r requirements.txt
 | id | int | ✅ | ❌ |  |  |
 | username | varchar(50) |  | ❌ |  |  |
 | password | varchar(255) |  | ❌ |  |  |
-| role | varchar(50) |  | ❌ |  |  |
 | full_name | varchar(100) |  | ❌ |  |  |
 | phone | varchar(20) |  | ❌ |  |  |
 | email | varchar(100) |  | ❌ |  |  |
