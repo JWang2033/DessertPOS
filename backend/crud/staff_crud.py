@@ -9,6 +9,9 @@ def get_staff_by_email(db:Session, email: str):
     return db.query(Staff).filter(Staff.email == email).first()
 def get_staff_by_phone(db: Session, phone:str):
     return db.query(Staff).filter(Staff.phone == phone).first()
+def get_staff_by_id(db: Session, staff_id: int):
+    return db.query(Staff).filter(Staff.id == staff_id).first()
+
 
 def create_staff(db: Session, staff: StaffCreate):
     hashed_password = get_password_hash(staff.password)

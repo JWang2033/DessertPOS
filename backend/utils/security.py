@@ -130,4 +130,3 @@ def get_current_user_id(payload: Dict[str, Any] = Depends(get_current_user_paylo
     if kind != "user":
         raise HTTPException(status_code=401, detail="Token not for user")
     return uid
-

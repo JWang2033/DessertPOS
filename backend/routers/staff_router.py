@@ -5,7 +5,8 @@ from backend.schemas import staff_schemas
 from backend.crud import staff_crud
 from backend.utils.security import verify_password, create_access_token_v2
 from backend.database import SessionLocal
-from backend.utils.auth_dependencies import require_role  # 兼容期仍按老的“manager”角色校验
+from backend.utils.auth_dependencies import require_roles  # 兼容期仍按老的“manager”角色校验
+from fastapi.security import OAuth2PasswordRequestForm
 
 # ✅ 若你已创建 RBAC 表，可用以下模型做角色查询/绑定（若未创建，也不会报错，只需注释掉用到的代码块）
 try:
@@ -13,8 +14,6 @@ try:
     RBAC_ENABLED = True
 except Exception:
     RBAC_ENABLED = False
-
-from backend.utils.security import OAuth2PasswordRequestForm
 
 router = APIRouter(prefix="/staff", tags=["Authentication"])
 
@@ -74,7 +73,7 @@ def login_staff(
 def register_staff(
     staff: staff_schemas.StaffCreate,
     db: Session = Depends(get_db),
-    current_staff = Depends(require_role(["manager"])),  # 兼容期：必须是 manager 才能注册
+    current_staff = Depends(require_roles(["manager"])),  # 兼容期：必须是 manager 才能注册
 ):
     # 规范化输入
     username = staff.username.strip()
@@ -84,7 +83,7 @@ def register_staff(
     initial_role_code = (staff.role or "staff").strip().lower()  # 作为“初始角色代码”
 
     # 角色白名单（过渡期保持不变）
-    allowed_roles = {"manager", "staff", "trainee"}
+    allowed_roles = {"owner", "manager", "staff", "trainee"}
     if initial_role_code not in allowed_roles:
         raise HTTPException(status_code=400, detail=f"Invalid role. Allowed: {', '.join(sorted(allowed_roles))}")
 
@@ -108,10 +107,15 @@ def register_staff(
 
     # ✅ 如果 RBAC 表已存在：同步到 staff_roles（正式做法）
     if RBAC_ENABLED:
-        role_obj = db.execute(select(Role).where(Role.code == initial_role_code)).scalar_one_or_none()
-        if role_obj is None:
+        role_id = db.execute(
+            select(Role.id).where(Role.code == initial_role_code)
+        ).scalar_one_or_none()
+
+        if role_id is None:
             raise HTTPException(status_code=400, detail=f"Role not found in RBAC tables: {initial_role_code}")
-        db.add(StaffRole(staff_id=new_staff.id, role_id=role_obj.id))
+
+        db.add(StaffRole(staff_id=new_staff.id, role_id=role_id))
+
         db.commit()
 
     return {
