@@ -3,16 +3,22 @@
 │   ├── __init__.py
 │   ├── config.py
 │   ├── crud
+│   │   ├── admin_catalog_crud.py
+│   │   ├── catalog_crud.py
 │   │   ├── staff_crud.py
 │   │   └── user_crud.py
 │   ├── database.py
 │   ├── models
+│   │   ├── catalog.py
+│   │   ├── ingredient_allergy.py
 │   │   ├── role.py
 │   │   ├── staff.py
 │   │   └── user.py
 │   ├── routers
 │   │   ├── __init__.py
+│   │   ├── admin_catalog_router.py
 │   │   ├── auth.py
+│   │   ├── catalog_router.py
 │   │   ├── protected.py
 │   │   ├── rbac_router.py
 │   │   ├── staff_router.py
@@ -20,6 +26,7 @@
 │   │   └── user_router.py
 │   ├── schemas
 │   │   ├── __init__.py
+│   │   ├── catalog_schemas.py
 │   │   ├── staff_schemas.py
 │   │   └── user_schemas.py
 │   └── utils
@@ -33,4 +40,4 @@
 ├── requirements.txt
 └── update_db_structure.py
 
-7 directories, 27 files
+7 directories, 34 files

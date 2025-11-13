@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from backend.routers import auth, protected, staff_router, test, user_router, rbac_router
+from backend.routers import auth, protected, staff_router, test, user_router, rbac_router, admin_catalog_router, catalog_router
 
 
 app = FastAPI()
@@ -8,3 +8,5 @@ app.include_router(user_router.router)
 app.include_router(protected.router)
 app.include_router(test.router)
 app.include_router(rbac_router.router)
+app.include_router(admin_catalog_router.router)
+app.include_router(catalog_router.router)

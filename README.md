@@ -27,16 +27,22 @@ pip install -r requirements.txt
 │   ├── __init__.py
 │   ├── config.py
 │   ├── crud
+│   │   ├── admin_catalog_crud.py
+│   │   ├── catalog_crud.py
 │   │   ├── staff_crud.py
 │   │   └── user_crud.py
 │   ├── database.py
 │   ├── models
+│   │   ├── catalog.py
+│   │   ├── ingredient_allergy.py
 │   │   ├── role.py
 │   │   ├── staff.py
 │   │   └── user.py
 │   ├── routers
 │   │   ├── __init__.py
+│   │   ├── admin_catalog_router.py
 │   │   ├── auth.py
+│   │   ├── catalog_router.py
 │   │   ├── protected.py
 │   │   ├── rbac_router.py
 │   │   ├── staff_router.py
@@ -44,6 +50,7 @@ pip install -r requirements.txt
 │   │   └── user_router.py
 │   ├── schemas
 │   │   ├── __init__.py
+│   │   ├── catalog_schemas.py
 │   │   ├── staff_schemas.py
 │   │   └── user_schemas.py
 │   └── utils
@@ -57,7 +64,7 @@ pip install -r requirements.txt
 ├── requirements.txt
 └── update_db_structure.py
 
-7 directories, 27 files
+7 directories, 34 files
 ```
 <!-- tree:end -->
 
@@ -70,6 +77,15 @@ pip install -r requirements.txt
 |--------|------|------|------|--------|------|
 | id | int | ✅ | ❌ |  |  |
 | type | varchar(100) |  | ❌ |  |  |
+
+---
+
+### `ingredient_allergies` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
+|--------|------|------|------|--------|------|
+| ingredient_id | bigint unsigned | ✅ | ❌ |  |  |
+| allergy_id | int | ✅ | ❌ |  |  |
 
 ---
 
