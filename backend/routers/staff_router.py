@@ -20,6 +20,23 @@ def get_db():
     finally:
         db.close()
 
+# ---------------------------------------------------------
+# 1) 员工登录（账号 + 密码）
+# ---------------------------------------------------------
+# 接口说明：
+# 功能：员工使用 username / email / phone 登录后台系统。
+# URL：POST /staff/login
+# 表单格式（x-www-form-urlencoded）：
+#   username=<账号或邮箱或手机>
+#   password=<密码>
+# 权限：不需要 Authorization（因为是登录接口）
+# 返回格式：
+#   {
+#     "access_token": "<jwt>",
+#     "token_type": "bearer"
+#   }
+# Token sub 格式：sub = "staff:{id}"
+# extra_claims 中会包含 roles: ["manager", "cashier", ...]
 @router.post("/login")
 def login_staff(
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -47,6 +64,30 @@ def login_staff(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
+# ---------------------------------------------------------
+# 2) 创建员工账号（RBAC 管理）
+# ---------------------------------------------------------
+# 接口说明：
+# 功能：创建新的员工账号（后台管理端）。
+# URL：POST /staff/register
+# 请求体格式（JSON）：
+#   {
+#     "username": "alice",
+#     "password": "abc123",
+#     "full_name": "Alice Tan",
+#     "role": "manager",
+#     "email": "test@test.com",
+#     "phone": "1234567890"
+#   }
+# 权限：需要 Authorization: Bearer <staff_token>
+#       角色要求：owner 或 manager
+# 返回格式：
+#   {
+#     "id": 1,
+#     "username": "alice",
+#     "full_name": "Alice Tan",
+#     "roles": ["manager"]
+#   }
 @router.post("/register")
 def register_staff(
     staff: staff_schemas.StaffCreate,
