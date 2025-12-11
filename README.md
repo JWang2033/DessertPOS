@@ -23,18 +23,24 @@ pip install -r requirements.txt
 <!-- tree:start -->
 ```
 .
+├── IMPLEMENTATION_SUMMARY.md
+├── ORDER_API_DOCUMENTATION.md
+├── README.md
+├── TEST_COMMANDS.md
 ├── backend
 │   ├── __init__.py
 │   ├── config.py
 │   ├── crud
 │   │   ├── admin_catalog_crud.py
 │   │   ├── catalog_crud.py
+│   │   ├── order_crud.py
 │   │   ├── staff_crud.py
 │   │   └── user_crud.py
 │   ├── database.py
 │   ├── models
 │   │   ├── catalog.py
 │   │   ├── ingredient_allergy.py
+│   │   ├── order.py
 │   │   ├── role.py
 │   │   ├── staff.py
 │   │   └── user.py
@@ -43,6 +49,7 @@ pip install -r requirements.txt
 │   │   ├── admin_catalog_router.py
 │   │   ├── auth.py
 │   │   ├── catalog_router.py
+│   │   ├── order_router.py
 │   │   ├── protected.py
 │   │   ├── rbac_router.py
 │   │   ├── staff_router.py
@@ -51,20 +58,26 @@ pip install -r requirements.txt
 │   ├── schemas
 │   │   ├── __init__.py
 │   │   ├── catalog_schemas.py
+│   │   ├── order_schemas.py
 │   │   ├── staff_schemas.py
 │   │   └── user_schemas.py
 │   └── utils
 │       ├── auth_dependencies.py
 │       └── security.py
+├── create_allergen_tables.sql
 ├── main.py
+├── order_allergen_tables_redis_cart.sql
+├── order_cart_allergen_tables.sql
 ├── order_tables.sql
 ├── product_tables.sql
 ├── project_structure.txt
-├── README.md
+├── quick_test_orders.py
 ├── requirements.txt
+├── test_order_api.sh
+├── test_order_api_simple.sh
 └── update_db_structure.py
 
-7 directories, 34 files
+7 directories, 47 files
 ```
 <!-- tree:end -->
 
@@ -167,6 +180,16 @@ pip install -r requirements.txt
 | code | varchar(128) |  | ❌ |  |  |
 | name | varchar(128) |  | ❌ |  |  |
 | description | varchar(255) |  | ✅ |  |  |
+
+---
+
+### `product_allergens` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
+|--------|------|------|------|--------|------|
+| product_id | bigint unsigned | ✅ | ❌ |  |  |
+| allergen | varchar(50) | ✅ | ❌ |  |  |
+| created_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
 
 ---
 
@@ -281,6 +304,17 @@ pip install -r requirements.txt
 | name | varchar(100) |  | ❌ |  |  |
 | price | decimal(10,2) |  | ✅ |  |  |
 | stock | int |  | ✅ |  |  |
+
+---
+
+### `user_allergens` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
+|--------|------|------|------|--------|------|
+| id | bigint unsigned | ✅ | ❌ |  |  |
+| user_id | int |  | ❌ |  |  |
+| allergen | varchar(50) |  | ❌ |  |  |
+| created_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
 
 ---
 
