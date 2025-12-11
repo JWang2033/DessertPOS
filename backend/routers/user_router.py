@@ -8,6 +8,7 @@ from backend.schemas.user_schemas import (
     SendCodeRequest, LoginRequest, RegisterRequest,
     UserOut, LoginResponse
 )
+from backend.utils.sms_service import sms_service
 
 # ✅ 与 staff 同步的安全依赖：使用 v2 token、oauth2_user、parse_subject
 from backend.utils.security import (
@@ -48,6 +49,11 @@ def get_db():
 def send_verification_code(payload: SendCodeRequest, db: Session = Depends(get_db)):
     phone = payload.phone_number.strip()
 
+    # 验证美国电话号码格式：+1 后跟10位数字
+    import re
+    if not re.match(r'^\+1\d{10}$', phone):
+        raise HTTPException(status_code=400, detail="Invalid phone number format. Expected: +1XXXXXXXXXX (10 digits)")
+
     # 生成 6 位验证码并存入 Redis（有效期 5 分钟）
     import random
     code = str(random.randint(100000, 999999))
@@ -58,8 +64,18 @@ def send_verification_code(payload: SendCodeRequest, db: Session = Depends(get_d
     if not user:
         user_crud.create_user(db, phone_number=phone, username=f"user_{phone[-4:]}")
 
-    # 生产环境应调用短信服务，这里返回 debug_code 方便测试
-    return {"message": "Verification code sent", "debug_code": code}
+    # 发送短信验证码
+    sms_result = sms_service.send_verification_code(phone, code)
+
+    if not sms_result["success"]:
+        raise HTTPException(status_code=500, detail=sms_result["message"])
+
+    # 返回结果（开发环境会包含 debug_code）
+    response = {"message": sms_result["message"]}
+    if "debug_code" in sms_result:
+        response["debug_code"] = sms_result["debug_code"]
+
+    return response
 
 # ---------------------------------------------------------
 # 2) 登录（验证码登录）
@@ -88,6 +104,11 @@ def send_verification_code(payload: SendCodeRequest, db: Session = Depends(get_d
 def login_with_code(payload: LoginRequest, db: Session = Depends(get_db)):
     phone = payload.phone_number.strip()
     code = payload.code.strip()
+
+    # 验证美国电话号码格式
+    import re
+    if not re.match(r'^\+1\d{10}$', phone):
+        raise HTTPException(status_code=400, detail="Invalid phone number format. Expected: +1XXXXXXXXXX (10 digits)")
 
     stored_code = redis_client.get(f"otp:{phone}")
     if not stored_code:
