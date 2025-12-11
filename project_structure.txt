@@ -3,6 +3,7 @@
 ├── ORDER_API_DOCUMENTATION.md
 ├── README.md
 ├── TEST_COMMANDS.md
+├── TWILIO_SETUP.md
 ├── backend
 │   ├── __init__.py
 │   ├── config.py
@@ -39,8 +40,235 @@
 │   │   └── user_schemas.py
 │   └── utils
 │       ├── auth_dependencies.py
-│       └── security.py
+│       ├── security.py
+│       └── sms_service.py
 ├── create_allergen_tables.sql
+├── frontend
+│   ├── FRONTEND_GUIDE.md
+│   ├── README.md
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── node_modules
+│   │   ├── @alloc
+│   │   ├── @babel
+│   │   ├── @emnapi
+│   │   ├── @eslint
+│   │   ├── @eslint-community
+│   │   ├── @humanfs
+│   │   ├── @humanwhocodes
+│   │   ├── @jridgewell
+│   │   ├── @napi-rs
+│   │   ├── @nodelib
+│   │   ├── @oxc-project
+│   │   ├── @rolldown
+│   │   ├── @tailwindcss
+│   │   ├── @tybys
+│   │   ├── @types
+│   │   ├── @vitejs
+│   │   ├── acorn
+│   │   ├── acorn-jsx
+│   │   ├── ajv
+│   │   ├── ansi-styles
+│   │   ├── any-promise
+│   │   ├── anymatch
+│   │   ├── arg
+│   │   ├── argparse
+│   │   ├── asynckit
+│   │   ├── autoprefixer
+│   │   ├── axios
+│   │   ├── balanced-match
+│   │   ├── baseline-browser-mapping
+│   │   ├── binary-extensions
+│   │   ├── brace-expansion
+│   │   ├── braces
+│   │   ├── browserslist
+│   │   ├── call-bind-apply-helpers
+│   │   ├── callsites
+│   │   ├── camelcase-css
+│   │   ├── caniuse-lite
+│   │   ├── chalk
+│   │   ├── chokidar
+│   │   ├── color-convert
+│   │   ├── color-name
+│   │   ├── combined-stream
+│   │   ├── commander
+│   │   ├── concat-map
+│   │   ├── convert-source-map
+│   │   ├── cross-spawn
+│   │   ├── cssesc
+│   │   ├── csstype
+│   │   ├── debug
+│   │   ├── deep-is
+│   │   ├── delayed-stream
+│   │   ├── detect-libc
+│   │   ├── didyoumean
+│   │   ├── dlv
+│   │   ├── dunder-proto
+│   │   ├── electron-to-chromium
+│   │   ├── enhanced-resolve
+│   │   ├── es-define-property
+│   │   ├── es-errors
+│   │   ├── es-object-atoms
+│   │   ├── es-set-tostringtag
+│   │   ├── escalade
+│   │   ├── escape-string-regexp
+│   │   ├── eslint
+│   │   ├── eslint-plugin-react-hooks
+│   │   ├── eslint-plugin-react-refresh
+│   │   ├── eslint-scope
+│   │   ├── eslint-visitor-keys
+│   │   ├── espree
+│   │   ├── esquery
+│   │   ├── esrecurse
+│   │   ├── estraverse
+│   │   ├── esutils
+│   │   ├── fast-deep-equal
+│   │   ├── fast-glob
+│   │   ├── fast-json-stable-stringify
+│   │   ├── fast-levenshtein
+│   │   ├── fastq
+│   │   ├── fdir
+│   │   ├── file-entry-cache
+│   │   ├── fill-range
+│   │   ├── find-up
+│   │   ├── flat-cache
+│   │   ├── flatted
+│   │   ├── follow-redirects
+│   │   ├── form-data
+│   │   ├── fraction.js
+│   │   ├── fsevents
+│   │   ├── function-bind
+│   │   ├── gensync
+│   │   ├── get-intrinsic
+│   │   ├── get-proto
+│   │   ├── glob-parent
+│   │   ├── globals
+│   │   ├── gopd
+│   │   ├── graceful-fs
+│   │   ├── has-flag
+│   │   ├── has-symbols
+│   │   ├── has-tostringtag
+│   │   ├── hasown
+│   │   ├── hermes-estree
+│   │   ├── hermes-parser
+│   │   ├── ignore
+│   │   ├── import-fresh
+│   │   ├── imurmurhash
+│   │   ├── is-binary-path
+│   │   ├── is-core-module
+│   │   ├── is-extglob
+│   │   ├── is-glob
+│   │   ├── is-number
+│   │   ├── isexe
+│   │   ├── jiti
+│   │   ├── js-tokens
+│   │   ├── js-yaml
+│   │   ├── jsesc
+│   │   ├── json-buffer
+│   │   ├── json-schema-traverse
+│   │   ├── json-stable-stringify-without-jsonify
+│   │   ├── json5
+│   │   ├── keyv
+│   │   ├── levn
+│   │   ├── lightningcss
+│   │   ├── lightningcss-darwin-arm64
+│   │   ├── lilconfig
+│   │   ├── lines-and-columns
+│   │   ├── locate-path
+│   │   ├── lodash.merge
+│   │   ├── lru-cache
+│   │   ├── magic-string
+│   │   ├── math-intrinsics
+│   │   ├── merge2
+│   │   ├── micromatch
+│   │   ├── mime-db
+│   │   ├── mime-types
+│   │   ├── minimatch
+│   │   ├── ms
+│   │   ├── mz
+│   │   ├── nanoid
+│   │   ├── natural-compare
+│   │   ├── node-releases
+│   │   ├── normalize-path
+│   │   ├── normalize-range
+│   │   ├── object-assign
+│   │   ├── object-hash
+│   │   ├── optionator
+│   │   ├── p-limit
+│   │   ├── p-locate
+│   │   ├── parent-module
+│   │   ├── path-exists
+│   │   ├── path-key
+│   │   ├── path-parse
+│   │   ├── picocolors
+│   │   ├── picomatch
+│   │   ├── pify
+│   │   ├── pirates
+│   │   ├── postcss
+│   │   ├── postcss-import
+│   │   ├── postcss-js
+│   │   ├── postcss-load-config
+│   │   ├── postcss-nested
+│   │   ├── postcss-selector-parser
+│   │   ├── postcss-value-parser
+│   │   ├── prelude-ls
+│   │   ├── proxy-from-env
+│   │   ├── punycode
+│   │   ├── queue-microtask
+│   │   ├── react
+│   │   ├── react-dom
+│   │   ├── react-refresh
+│   │   ├── read-cache
+│   │   ├── readdirp
+│   │   ├── resolve
+│   │   ├── resolve-from
+│   │   ├── reusify
+│   │   ├── rolldown
+│   │   ├── run-parallel
+│   │   ├── scheduler
+│   │   ├── semver
+│   │   ├── shebang-command
+│   │   ├── shebang-regex
+│   │   ├── source-map-js
+│   │   ├── strip-json-comments
+│   │   ├── sucrase
+│   │   ├── supports-color
+│   │   ├── supports-preserve-symlinks-flag
+│   │   ├── tailwindcss
+│   │   ├── tapable
+│   │   ├── thenify
+│   │   ├── thenify-all
+│   │   ├── tinyglobby
+│   │   ├── to-regex-range
+│   │   ├── ts-interface-checker
+│   │   ├── tslib
+│   │   ├── type-check
+│   │   ├── update-browserslist-db
+│   │   ├── uri-js
+│   │   ├── util-deprecate
+│   │   ├── vite
+│   │   ├── which
+│   │   ├── word-wrap
+│   │   ├── yallist
+│   │   ├── yaml
+│   │   ├── yocto-queue
+│   │   ├── zod
+│   │   └── zod-validation-error
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── public
+│   │   └── vite.svg
+│   ├── src
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── assets
+│   │   ├── components
+│   │   ├── index.css
+│   │   ├── main.jsx
+│   │   └── services
+│   ├── tailwind.config.js
+│   └── vite.config.js
 ├── main.py
 ├── order_allergen_tables_redis_cart.sql
 ├── order_cart_allergen_tables.sql
@@ -53,4 +281,4 @@
 ├── test_order_api_simple.sh
 └── update_db_structure.py
 
-7 directories, 47 files
+219 directories, 63 files
