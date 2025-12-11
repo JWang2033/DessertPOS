@@ -1,16 +1,22 @@
 .
+├── IMPLEMENTATION_SUMMARY.md
+├── ORDER_API_DOCUMENTATION.md
+├── README.md
+├── TEST_COMMANDS.md
 ├── backend
 │   ├── __init__.py
 │   ├── config.py
 │   ├── crud
 │   │   ├── admin_catalog_crud.py
 │   │   ├── catalog_crud.py
+│   │   ├── order_crud.py
 │   │   ├── staff_crud.py
 │   │   └── user_crud.py
 │   ├── database.py
 │   ├── models
 │   │   ├── catalog.py
 │   │   ├── ingredient_allergy.py
+│   │   ├── order.py
 │   │   ├── role.py
 │   │   ├── staff.py
 │   │   └── user.py
@@ -19,6 +25,7 @@
 │   │   ├── admin_catalog_router.py
 │   │   ├── auth.py
 │   │   ├── catalog_router.py
+│   │   ├── order_router.py
 │   │   ├── protected.py
 │   │   ├── rbac_router.py
 │   │   ├── staff_router.py
@@ -27,17 +34,23 @@
 │   ├── schemas
 │   │   ├── __init__.py
 │   │   ├── catalog_schemas.py
+│   │   ├── order_schemas.py
 │   │   ├── staff_schemas.py
 │   │   └── user_schemas.py
 │   └── utils
 │       ├── auth_dependencies.py
 │       └── security.py
+├── create_allergen_tables.sql
 ├── main.py
+├── order_allergen_tables_redis_cart.sql
+├── order_cart_allergen_tables.sql
 ├── order_tables.sql
 ├── product_tables.sql
 ├── project_structure.txt
-├── README.md
+├── quick_test_orders.py
 ├── requirements.txt
+├── test_order_api.sh
+├── test_order_api_simple.sh
 └── update_db_structure.py
 
-7 directories, 34 files
+7 directories, 47 files
