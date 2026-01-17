@@ -66,6 +66,7 @@ pip install -r requirements.txt
 │       ├── auth_dependencies.py
 │       ├── security.py
 │       └── sms_service.py
+├── create-table-template.sql
 ├── create_allergen_tables.sql
 ├── frontend
 │   ├── FRONTEND_GUIDE.md
@@ -305,28 +306,47 @@ pip install -r requirements.txt
 ├── test_order_api_simple.sh
 └── update_db_structure.py
 
-219 directories, 63 files
+219 directories, 64 files
 ```
 <!-- tree:end -->
 
 ### 🗃 数据库表说明
 <!-- db:start -->
 
-### `Allergies` 表结构
+### `allergens` 表结构
 
 | 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
 |--------|------|------|------|--------|------|
-| id | int | ✅ | ❌ |  |  |
-| type | varchar(100) |  | ❌ |  |  |
+| id | bigint unsigned | ✅ | ❌ |  |  |
+| name | varchar(100) |  | ❌ |  |  |
 
 ---
 
-### `ingredient_allergies` 表结构
+### `categories` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
+|--------|------|------|------|--------|------|
+| id | bigint unsigned | ✅ | ❌ |  |  |
+| name | varchar(50) |  | ❌ |  |  |
+| tag | varchar(100) |  | ✅ |  |  |
+
+---
+
+### `category_units` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
+|--------|------|------|------|--------|------|
+| category_id | bigint unsigned | ✅ | ❌ |  |  |
+| unit_id | bigint unsigned | ✅ | ❌ |  |  |
+
+---
+
+### `ingredient_allergens` 表结构
 
 | 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
 |--------|------|------|------|--------|------|
 | ingredient_id | bigint unsigned | ✅ | ❌ |  |  |
-| allergy_id | int | ✅ | ❌ |  |  |
+| allergen_id | bigint unsigned | ✅ | ❌ |  |  |
 
 ---
 
@@ -335,13 +355,25 @@ pip install -r requirements.txt
 | 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
 |--------|------|------|------|--------|------|
 | id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(120) |  | ❌ |  |  |
-| unit | varchar(16) |  | ❌ |  |  |
-| quantity_remaining | decimal(12,3) |  | ❌ | 0.000 |  |
-| safety_stock | decimal(12,3) |  | ❌ | 0.000 |  |
-| status | tinyint |  | ❌ | 1 | 1=active,0=inactive |
-| created_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
-| updated_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
+| name | varchar(100) |  | ❌ |  |  |
+| category_id | bigint unsigned |  | ❌ |  |  |
+| brand | varchar(100) |  | ✅ |  |  |
+| threshold | decimal(10,2) |  | ✅ |  |  |
+
+---
+
+### `inventory` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
+|--------|------|------|------|--------|------|
+| id | bigint unsigned | ✅ | ❌ |  |  |
+| ingredient_id | bigint unsigned |  | ❌ |  |  |
+| unit_id | bigint unsigned |  | ❌ |  |  |
+| standard_qty | decimal(10,2) |  | ✅ |  |  |
+| actual_qty | decimal(10,2) |  | ✅ |  |  |
+| location | varchar(100) |  | ❌ |  |  |
+| update_time | datetime |  | ❌ |  |  |
+| restock_needed | tinyint(1) |  | ❌ | 0 |  |
 
 ---
 
@@ -411,59 +443,48 @@ pip install -r requirements.txt
 
 ---
 
-### `product_allergens` 表结构
+### `purchase_order_items` 表结构
 
 | 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
 |--------|------|------|------|--------|------|
-| product_id | bigint unsigned | ✅ | ❌ |  |  |
-| allergen | varchar(50) | ✅ | ❌ |  |  |
-| created_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
+| id | bigint unsigned | ✅ | ❌ |  |  |
+| purchase_order_id | bigint unsigned |  | ❌ |  |  |
+| ingredient_id | bigint unsigned |  | ❌ |  |  |
+| unit_id | bigint unsigned |  | ❌ |  |  |
+| quantity | decimal(10,2) |  | ❌ |  |  |
 
 ---
 
-### `product_ingredients` 表结构
+### `purchase_orders` 表结构
 
 | 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
 |--------|------|------|------|--------|------|
-| product_id | bigint unsigned | ✅ | ❌ |  |  |
+| id | bigint unsigned | ✅ | ❌ |  |  |
+| po_code | varchar(50) |  | ❌ |  |  |
+| order_date | date |  | ❌ |  |  |
+| store_id | varchar(10) |  | ❌ |  |  |
+| vendor | varchar(100) |  | ✅ |  |  |
+
+---
+
+### `recipe_ingredients` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
+|--------|------|------|------|--------|------|
+| recipe_id | bigint unsigned | ✅ | ❌ |  |  |
 | ingredient_id | bigint unsigned | ✅ | ❌ |  |  |
-| amount_per_unit | decimal(12,3) |  | ❌ |  |  |
-| created_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
+| unit_id | bigint unsigned |  | ❌ |  |  |
+| quantity | decimal(10,2) |  | ❌ |  |  |
 
 ---
 
-### `product_semifinished` 表结构
-
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| product_id | bigint unsigned | ✅ | ❌ |  |  |
-| semifinished_id | bigint unsigned | ✅ | ❌ |  |  |
-| amount_per_unit | decimal(12,3) |  | ❌ |  |  |
-| created_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
-
----
-
-### `product_types` 表结构
+### `recipes` 表结构
 
 | 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
 |--------|------|------|------|--------|------|
 | id | bigint unsigned | ✅ | ❌ |  |  |
 | name | varchar(100) |  | ❌ |  |  |
-| created_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
-| updated_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
-
----
-
-### `products` 表结构
-
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(120) |  | ❌ |  |  |
-| price | decimal(10,2) |  | ❌ | 0.00 |  |
-| type_id | bigint unsigned |  | ❌ |  |  |
-| created_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
-| updated_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
+| type | varchar(50) |  | ❌ |  |  |
 
 ---
 
@@ -487,18 +508,24 @@ pip install -r requirements.txt
 
 ---
 
-### `semifinished` 表结构
+### `semi_finished_product_ingredients` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
+|--------|------|------|------|--------|------|
+| semi_finished_product_id | bigint unsigned | ✅ | ❌ |  |  |
+| ingredient_id | bigint unsigned | ✅ | ❌ |  |  |
+| unit_id | bigint unsigned |  | ❌ |  |  |
+| quantity | decimal(10,2) |  | ❌ |  |  |
+
+---
+
+### `semi_finished_products` 表结构
 
 | 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
 |--------|------|------|------|--------|------|
 | id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(120) |  | ❌ |  |  |
-| unit | varchar(16) |  | ❌ |  |  |
-| quantity_remaining | decimal(12,3) |  | ❌ | 0.000 |  |
-| safety_stock | decimal(12,3) |  | ❌ | 0.000 |  |
-| status | tinyint |  | ❌ | 1 | 1=active,0=inactive |
-| created_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
-| updated_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
+| name | varchar(100) |  | ❌ |  |  |
+| prep_time_hours | decimal(5,2) |  | ❌ |  |  |
 
 ---
 
@@ -524,14 +551,13 @@ pip install -r requirements.txt
 
 ---
 
-### `test_products` 表结构
+### `units` 表结构
 
 | 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
 |--------|------|------|------|--------|------|
-| id | int | ✅ | ❌ |  |  |
-| name | varchar(100) |  | ❌ |  |  |
-| price | decimal(10,2) |  | ✅ |  |  |
-| stock | int |  | ✅ |  |  |
+| id | bigint unsigned | ✅ | ❌ |  |  |
+| name | varchar(50) |  | ❌ |  |  |
+| abbreviation | varchar(20) |  | ❌ |  |  |
 
 ---
 

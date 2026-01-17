@@ -42,6 +42,7 @@
 │       ├── auth_dependencies.py
 │       ├── security.py
 │       └── sms_service.py
+├── create-table-template.sql
 ├── create_allergen_tables.sql
 ├── frontend
 │   ├── FRONTEND_GUIDE.md
@@ -281,4 +282,4 @@
 ├── test_order_api_simple.sh
 └── update_db_structure.py
 
-219 directories, 63 files
+219 directories, 64 files
