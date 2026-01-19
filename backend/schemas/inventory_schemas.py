@@ -132,14 +132,21 @@ class IngredientBatchResponse(BaseModel):
     skipped: List[dict] = Field(default_factory=list, description="Ingredients that were skipped (already exist)")
 
 
-# ====== Recipe & Semi-Finished Product Schemas (for future use) ======
-class RecipeBase(BaseModel):
-    name: str = Field(..., max_length=100)
-    type: str = Field(..., max_length=50)
+# ====== Semi-Finished Product (Prepped Items) Schemas ======
+class SemiFinishedProductIngredientBase(BaseModel):
+    """Ingredient detail for semi-finished products"""
+    ingredient_name: str = Field(..., description="Ingredient name")
+    unit_name: str = Field(..., description="Unit name (e.g., kg, lb)")
+    quantity: Decimal = Field(..., gt=0, description="Quantity must be greater than 0")
 
 
-class RecipeOut(RecipeBase):
-    id: int
+class SemiFinishedProductIngredientOut(BaseModel):
+    """Response schema for ingredient details with denormalized names"""
+    ingredient_id: int
+    ingredient_name: str
+    unit_id: int
+    unit_abbreviation: str
+    quantity: Decimal
 
     class Config:
         from_attributes = True
@@ -150,7 +157,46 @@ class SemiFinishedProductBase(BaseModel):
     prep_time_hours: Decimal = Field(..., gt=0, description="Preparation time in hours")
 
 
+class SemiFinishedProductCreate(SemiFinishedProductBase):
+    ingredients: List[SemiFinishedProductIngredientBase] = Field(..., min_items=1, description="List of ingredients")
+
+
+class SemiFinishedProductUpdate(BaseModel):
+    name: Optional[str] = Field(None, max_length=100)
+    prep_time_hours: Optional[Decimal] = Field(None, gt=0)
+    ingredients: Optional[List[SemiFinishedProductIngredientBase]] = Field(None, min_items=1)
+
+
 class SemiFinishedProductOut(SemiFinishedProductBase):
+    id: int
+    ingredients: List[SemiFinishedProductIngredientOut] = Field(default_factory=list)
+
+    class Config:
+        from_attributes = True
+
+
+class SemiFinishedProductListOut(BaseModel):
+    """Simplified list view of semi-finished products"""
+    id: int
+    name: str
+    prep_time_hours: Decimal
+    ingredient_count: int = Field(..., description="Number of ingredients")
+
+    class Config:
+        from_attributes = True
+
+
+# ====== Recipe Schemas (for future use) ======
+class RecipeBase(BaseModel):
+    name: str = Field(..., max_length=100)
+    type: str = Field(..., max_length=50)
+
+
+class RecipeOut(RecipeBase):
+    id: int
+
+    class Config:
+        from_attributes = True
     id: int
 
     class Config:
