@@ -25,6 +25,7 @@ pip install -r requirements.txt
 .
 ├── ADMIN_SETUP_API.md
 ├── README.md
+├── add_vendor_to_items.sql
 ├── backend
 │   ├── __init__.py
 │   ├── config.py
@@ -34,6 +35,7 @@ pip install -r requirements.txt
 │   │   ├── catalog_crud.py
 │   │   ├── ingredient_crud.py
 │   │   ├── product_crud.py
+│   │   ├── purchase_order_crud.py
 │   │   ├── staff_crud.py
 │   │   └── user_crud.py
 │   ├── database.py
@@ -52,9 +54,9 @@ pip install -r requirements.txt
 │   │   ├── catalog_router.py
 │   │   ├── ingredient_router.py
 │   │   ├── inventory_router.py
-│   │   ├── order_router.py
 │   │   ├── product_router.py
 │   │   ├── protected.py
+│   │   ├── purchase_order_router.py
 │   │   ├── rbac_router.py
 │   │   ├── staff_router.py
 │   │   ├── test.py
@@ -285,9 +287,10 @@ pip install -r requirements.txt
 ├── test_admin_setup.sh
 ├── test_ingredients.sh
 ├── test_products.sh
+├── test_purchase_orders.sh
 └── update_db_structure.py
 
-214 directories, 50 files
+214 directories, 53 files
 ```
 <!-- tree:end -->
 
@@ -433,6 +436,7 @@ pip install -r requirements.txt
 | ingredient_id | bigint unsigned |  | ❌ |  |  |
 | unit_id | bigint unsigned |  | ❌ |  |  |
 | quantity | decimal(10,2) |  | ❌ |  |  |
+| vendor | varchar(100) |  | ✅ |  | Vendor for this specific ingredient |
 
 ---
 
@@ -444,7 +448,6 @@ pip install -r requirements.txt
 | po_code | varchar(50) |  | ❌ |  |  |
 | order_date | date |  | ❌ |  |  |
 | store_id | varchar(10) |  | ❌ |  |  |
-| vendor | varchar(100) |  | ✅ |  |  |
 
 ---
 

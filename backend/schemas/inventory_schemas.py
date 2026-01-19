@@ -197,7 +197,64 @@ class RecipeOut(RecipeBase):
 
     class Config:
         from_attributes = True
+
+
+# ====== Purchase Order Schemas ======
+class PurchaseOrderItemBase(BaseModel):
+    """Base schema for purchase order items using ingredient_name and unit_name"""
+    ingredient_name: str = Field(..., description="Name of the ingredient")
+    unit_name: str = Field(..., description="Name of the unit")
+    quantity: Decimal = Field(..., gt=0, description="Quantity received (must be > 0)")
+    vendor: Optional[str] = Field(None, max_length=100, description="Vendor for this ingredient (optional)")
+
+
+class PurchaseOrderItemCreate(PurchaseOrderItemBase):
+    """Schema for creating purchase order items"""
+    pass
+
+
+class PurchaseOrderItemOut(BaseModel):
+    """Output schema for purchase order items with denormalized data"""
     id: int
+    ingredient_id: int
+    ingredient_name: str = Field(..., description="Denormalized ingredient name")
+    unit_id: int
+    unit_abbreviation: str = Field(..., description="Denormalized unit abbreviation")
+    quantity: Decimal
+    vendor: Optional[str] = Field(None, description="Vendor for this ingredient")
+
+    class Config:
+        from_attributes = True
+
+
+class PurchaseOrderBase(BaseModel):
+    """Base schema for purchase orders"""
+    order_date: str = Field(..., description="Order date in YYYY-MM-DD format (must be <= today)")
+    store_id: str = Field(..., max_length=10, description="Store identifier")
+
+
+class PurchaseOrderCreate(PurchaseOrderBase):
+    """Schema for creating a purchase order with items"""
+    items: List[PurchaseOrderItemCreate] = Field(..., min_items=1, description="List of items received")
+
+
+class PurchaseOrderOut(PurchaseOrderBase):
+    """Output schema for purchase order with full details"""
+    id: int
+    po_code: str = Field(..., description="Unique purchase order code (e.g., PO-20260119-0001)")
+    items: List[PurchaseOrderItemOut] = Field(default_factory=list, description="List of received items")
+
+    class Config:
+        from_attributes = True
+
+
+class PurchaseOrderListOut(BaseModel):
+    """Simplified list view of purchase orders"""
+    id: int
+    po_code: str
+    order_date: str
+    store_id: str
+    total_items_count: int = Field(..., description="Number of items in this purchase order")
 
     class Config:
         from_attributes = True

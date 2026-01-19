@@ -97,3 +97,25 @@ class RecipeIngredient(Base):
     ingredient_id = Column(BigInteger, ForeignKey("ingredients.id"), primary_key=True)
     unit_id = Column(BigInteger, ForeignKey("units.id"), nullable=False)
     quantity = Column(DECIMAL(10, 2), nullable=False)
+
+
+class PurchaseOrder(Base):
+    """Purchase orders (receiving) for ingredient inventory"""
+    __tablename__ = "purchase_orders"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    po_code = Column(String(50), nullable=False, unique=True, comment="Unique purchase order code (e.g., PO-20260119-0001)")
+    order_date = Column(String(10), nullable=False, comment="Date in YYYY-MM-DD format")
+    store_id = Column(String(10), nullable=False)
+
+
+class PurchaseOrderItem(Base):
+    """Line items for purchase orders"""
+    __tablename__ = "purchase_order_items"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    purchase_order_id = Column(BigInteger, ForeignKey("purchase_orders.id"), nullable=False)
+    ingredient_id = Column(BigInteger, ForeignKey("ingredients.id"), nullable=False)
+    unit_id = Column(BigInteger, ForeignKey("units.id"), nullable=False)
+    quantity = Column(DECIMAL(10, 2), nullable=False)
+    vendor = Column(String(100), nullable=True, comment="Vendor for this specific ingredient")
