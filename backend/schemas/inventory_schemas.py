@@ -82,7 +82,7 @@ class CategoryOut(CategoryBase):
 # ====== Ingredient Schemas ======
 class IngredientBase(BaseModel):
     name: str = Field(..., max_length=100)
-    category_id: int
+    category_name: str = Field(..., description="Category name (e.g., Fruit, Vegetable)")
     brand: Optional[str] = Field(None, max_length=100)
     threshold: Optional[Decimal] = Field(None, description="Low stock threshold")
 
@@ -93,18 +93,43 @@ class IngredientCreate(IngredientBase):
 
 class IngredientUpdate(BaseModel):
     name: Optional[str] = Field(None, max_length=100)
-    category_id: Optional[int] = None
+    category_name: Optional[str] = Field(None, description="Update category by name")
     brand: Optional[str] = Field(None, max_length=100)
     threshold: Optional[Decimal] = None
     allergen_ids: Optional[List[int]] = Field(None, description="Update allergen associations")
 
 
-class IngredientOut(IngredientBase):
+class IngredientOut(BaseModel):
+    """Full ingredient output with both ID and denormalized category name"""
     id: int
+    name: str
+    category_id: int
+    category_name: str
+    brand: Optional[str]
+    threshold: Optional[Decimal]
     allergens: List[AllergenOut] = Field(default_factory=list)
 
     class Config:
         from_attributes = True
+
+
+class IngredientListOut(BaseModel):
+    """Response schema for ingredient list with denormalized category and allergen names"""
+    id: int
+    name: str
+    category_name: str
+    brand: Optional[str]
+    threshold: Optional[Decimal]
+    allergen_names: List[str] = Field(default_factory=list)
+
+    class Config:
+        from_attributes = True
+
+
+class IngredientBatchResponse(BaseModel):
+    """Response for batch ingredient creation"""
+    created: List[IngredientOut] = Field(default_factory=list, description="Successfully created ingredients")
+    skipped: List[dict] = Field(default_factory=list, description="Ingredients that were skipped (already exist)")
 
 
 # ====== Recipe & Semi-Finished Product Schemas (for future use) ======
