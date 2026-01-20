@@ -258,3 +258,41 @@ class PurchaseOrderListOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# ====== Inventory Schemas ======
+class InventoryBase(BaseModel):
+    """Base schema for inventory"""
+    ingredient_name: str = Field(..., description="Name of the ingredient")
+    unit_name: str = Field(..., description="Name of the unit")
+    standard_qty: Optional[Decimal] = Field(None, ge=0, description="Standard quantity to maintain")
+    actual_qty: Optional[Decimal] = Field(None, ge=0, description="Current actual quantity")
+    location: str = Field(..., max_length=100, description="Storage location")
+
+
+class InventoryCreate(InventoryBase):
+    """Schema for creating inventory record"""
+    pass
+
+
+class InventoryUpdate(BaseModel):
+    """Schema for updating inventory (only actual_qty)"""
+    actual_qty: Decimal = Field(..., ge=0, description="New actual quantity")
+
+
+class InventoryOut(BaseModel):
+    """Output schema for inventory with denormalized data"""
+    inventory_id: int
+    ingredient_id: int
+    ingredient_name: str
+    category_name: str
+    brand: Optional[str]
+    standard_qty: Optional[Decimal]
+    actual_qty: Optional[Decimal]
+    unit_abbreviation: str
+    location: str
+    update_time: str = Field(..., description="Last update time in ISO format")
+    restock_needed: bool = Field(..., description="True if restock is needed based on threshold")
+
+    class Config:
+        from_attributes = True

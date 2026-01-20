@@ -3,7 +3,7 @@
 Inventory system models for ingredients, categories, units, allergens, etc.
 Based on create-table-template.sql structure
 """
-from sqlalchemy import Column, BigInteger, String, DECIMAL, ForeignKey, Table
+from sqlalchemy import Column, BigInteger, String, DECIMAL, ForeignKey, Table, DateTime, Integer
 from sqlalchemy.orm import relationship
 from backend.database import Base
 
@@ -119,3 +119,17 @@ class PurchaseOrderItem(Base):
     unit_id = Column(BigInteger, ForeignKey("units.id"), nullable=False)
     quantity = Column(DECIMAL(10, 2), nullable=False)
     vendor = Column(String(100), nullable=True, comment="Vendor for this specific ingredient")
+
+
+class Inventory(Base):
+    """Inventory tracking for ingredients"""
+    __tablename__ = "inventory"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    ingredient_id = Column(BigInteger, ForeignKey("ingredients.id"), nullable=False)
+    unit_id = Column(BigInteger, ForeignKey("units.id"), nullable=False)
+    standard_qty = Column(DECIMAL(10, 2), nullable=True, comment="Standard quantity to maintain")
+    actual_qty = Column(DECIMAL(10, 2), nullable=True, comment="Current actual quantity in stock")
+    location = Column(String(100), nullable=False, comment="Storage location")
+    update_time = Column(DateTime, nullable=False, comment="Last update timestamp")
+    restock_needed = Column(Integer, nullable=False, default=0, comment="1 if restock needed, 0 otherwise")

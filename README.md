@@ -34,6 +34,7 @@ pip install -r requirements.txt
 │   │   ├── admin_setup_crud.py
 │   │   ├── catalog_crud.py
 │   │   ├── ingredient_crud.py
+│   │   ├── inventory_crud.py
 │   │   ├── product_crud.py
 │   │   ├── purchase_order_crud.py
 │   │   ├── staff_crud.py
@@ -286,11 +287,12 @@ pip install -r requirements.txt
 ├── requirements.txt
 ├── test_admin_setup.sh
 ├── test_ingredients.sh
+├── test_inventory.sh
 ├── test_products.sh
 ├── test_purchase_orders.sh
 └── update_db_structure.py
 
-214 directories, 53 files
+214 directories, 55 files
 ```
 <!-- tree:end -->
 
