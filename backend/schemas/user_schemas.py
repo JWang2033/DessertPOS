@@ -29,7 +29,7 @@ class UserOut(BaseModel):
     phone_number: str
 
     class Config:
-        orm_mode = True  # Pydantic v1；如果是v2用 from_attributes = True
+        from_attributes = True  # Pydantic v2
 
 
 class TokenOut(BaseModel):

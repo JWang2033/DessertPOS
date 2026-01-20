@@ -7,6 +7,7 @@ Used infrequently for initial setup and maintenance
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from backend.database import SessionLocal
 from backend.schemas.inventory_schemas import (
     CategoryCreate, CategoryOut, CategoryUpdate,
@@ -168,11 +169,17 @@ def delete_category(
     db: Session = Depends(get_db)
 ):
     """Delete a category and its unit associations by name"""
-    success = admin_setup_crud.delete_category_by_name(db, category_name)
-    if not success:
+    try:
+        success = admin_setup_crud.delete_category_by_name(db, category_name)
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Category with name '{category_name}' not found"
+            )
+    except IntegrityError:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Category with name '{category_name}' not found"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Cannot delete category '{category_name}' because it is being used by ingredients or other records"
         )
 
 
@@ -234,11 +241,17 @@ def delete_unit(
     db: Session = Depends(get_db)
 ):
     """Delete a unit by name"""
-    success = admin_setup_crud.delete_unit_by_name(db, unit_name)
-    if not success:
+    try:
+        success = admin_setup_crud.delete_unit_by_name(db, unit_name)
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Unit with name '{unit_name}' not found"
+            )
+    except IntegrityError:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Unit with name '{unit_name}' not found"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Cannot delete unit '{unit_name}' because it is being used by categories or other records"
         )
 
 

@@ -83,6 +83,7 @@ class CategoryOut(CategoryBase):
 class IngredientBase(BaseModel):
     name: str = Field(..., max_length=100)
     category_name: str = Field(..., description="Category name (e.g., Fruit, Vegetable)")
+    unit_name: str = Field(..., description="Unit name (e.g., 克, 千克)")
     brand: Optional[str] = Field(None, max_length=100)
     threshold: Optional[Decimal] = Field(None, description="Low stock threshold")
 
@@ -94,6 +95,7 @@ class IngredientCreate(IngredientBase):
 class IngredientUpdate(BaseModel):
     name: Optional[str] = Field(None, max_length=100)
     category_name: Optional[str] = Field(None, description="Update category by name")
+    unit_name: Optional[str] = Field(None, description="Update unit by name")
     brand: Optional[str] = Field(None, max_length=100)
     threshold: Optional[Decimal] = None
     allergen_ids: Optional[List[int]] = Field(None, description="Update allergen associations")
@@ -118,6 +120,7 @@ class IngredientListOut(BaseModel):
     id: int
     name: str
     category_name: str
+    unit_name: str
     brand: Optional[str]
     threshold: Optional[Decimal]
     allergen_names: List[str] = Field(default_factory=list)

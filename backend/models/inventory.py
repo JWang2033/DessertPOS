@@ -49,6 +49,7 @@ class IngredientRaw(Base):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False, unique=True)
     category_id = Column(BigInteger, ForeignKey("categories.id"), nullable=False)
+    unit_id = Column(BigInteger, ForeignKey("units.id"), nullable=False)
     brand = Column(String(100), nullable=True)
     threshold = Column(DECIMAL(10, 2), nullable=True, comment="Low stock threshold")
 

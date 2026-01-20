@@ -22,6 +22,12 @@ def create_ingredient(db: Session, payload: IngredientCreate) -> IngredientRaw:
     if not category:
         raise ValueError(f"Category with name '{payload.category_name}' does not exist")
 
+    # Validate unit exists by name
+    from backend.models.inventory import Unit
+    unit = db.query(Unit).filter(Unit.name == payload.unit_name).first()
+    if not unit:
+        raise ValueError(f"Unit with name '{payload.unit_name}' does not exist")
+
     # Validate allergen IDs exist
     if payload.allergen_ids:
         allergen_count = db.query(Allergen).filter(
@@ -38,6 +44,7 @@ def create_ingredient(db: Session, payload: IngredientCreate) -> IngredientRaw:
     ingredient = IngredientRaw(
         name=payload.name,
         category_id=category.id,
+        unit_id=unit.id,
         brand=payload.brand,
         threshold=payload.threshold
     )
@@ -152,6 +159,20 @@ def list_ingredients(
         ).first()
         category_name = category.name if category else "Unknown"
 
+        # Get unit name
+        from backend.models.inventory import Unit
+        unit = db.query(Unit).filter(
+            Unit.id == ingredient.unit_id
+        ).first()
+        unit_name = unit.name if unit else "Unknown"
+
+        # Get allergen names
+        from backend.models.inventory import Unit
+        unit = db.query(Unit).filter(
+            Unit.id == ingredient.unit_id
+        ).first()
+        unit_name = unit.name if unit else "Unknown"
+
         # Get allergen names
         allergen_ids = db.query(IngredientAllergen.allergen_id).filter(
             IngredientAllergen.ingredient_id == ingredient.id
@@ -171,6 +192,7 @@ def list_ingredients(
             "name": ingredient.name,
             "category_id": ingredient.category_id,
             "category_name": category_name,
+            "unit_name": unit_name,
             "brand": ingredient.brand,
             "threshold": ingredient.threshold,
             "allergen_names": allergen_names
