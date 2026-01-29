@@ -110,12 +110,20 @@ def create_purchase_order(
         if item_data.quantity <= 0:
             raise ValueError(f"Quantity for '{item_data.ingredient_name}' must be greater than 0")
 
+        # Validate total_amount
+        if item_data.total_amount <= 0:
+            raise ValueError(f"Total amount for '{item_data.ingredient_name}' must be greater than 0")
+
         item_details.append({
             "ingredient_id": ingredient.id,
             "unit_id": unit.id,
             "quantity": item_data.quantity,
+            "total_amount": item_data.total_amount,
             "vendor": item_data.vendor
         })
+
+    # Calculate total amount for the order
+    order_total = sum(detail["total_amount"] for detail in item_details)
 
     # Generate unique PO code
     po_code = generate_po_code(db, payload.order_date)
@@ -124,7 +132,8 @@ def create_purchase_order(
     po = PurchaseOrder(
         po_code=po_code,
         order_date=payload.order_date,
-        store_id=payload.store_id
+        store_id=payload.store_id,
+        total_amount=order_total
     )
     db.add(po)
     db.flush()  # Get the ID
@@ -136,9 +145,40 @@ def create_purchase_order(
             ingredient_id=detail["ingredient_id"],
             unit_id=detail["unit_id"],
             quantity=detail["quantity"],
+            total_amount=detail["total_amount"],
             vendor=detail["vendor"]
         )
         db.add(item)
+
+        # Update inventory standard_qty with unit conversion
+        from backend.models.inventory import Inventory
+        from backend.utils.unit_converter import find_or_create_inventory_with_conversion
+
+        # Find existing inventory and convert quantity to inventory unit
+        inventory, converted_qty = find_or_create_inventory_with_conversion(
+            db,
+            detail["ingredient_id"],
+            detail["unit_id"],
+            detail["quantity"]
+        )
+
+        if inventory:
+            # Update existing inventory with converted quantity
+            inventory.standard_qty = (inventory.standard_qty or 0) + converted_qty
+            inventory.update_time = datetime.now()
+        else:
+            # No existing inventory or units are incompatible
+            # Create new inventory record with purchase unit
+            inventory = Inventory(
+                ingredient_id=detail["ingredient_id"],
+                unit_id=detail["unit_id"],
+                standard_qty=detail["quantity"],
+                actual_qty=0,
+                location="",
+                update_time=datetime.now(),
+                restock_needed=0
+            )
+            db.add(inventory)
 
     db.commit()
     db.refresh(po)
@@ -190,6 +230,7 @@ def list_purchase_orders(
             "po_code": po.po_code,
             "order_date": order_date_str,
             "store_id": po.store_id,
+            "total_amount": po.total_amount,
             "total_items_count": item_count
         })
 
@@ -221,6 +262,7 @@ def get_purchase_order_items(
         PurchaseOrderItem.ingredient_id,
         PurchaseOrderItem.unit_id,
         PurchaseOrderItem.quantity,
+        PurchaseOrderItem.total_amount,
         PurchaseOrderItem.vendor,
         IngredientRaw.name.label("ingredient_name"),
         Unit.abbreviation.label("unit_abbreviation")
@@ -242,6 +284,7 @@ def get_purchase_order_items(
             "unit_id": item.unit_id,
             "unit_abbreviation": item.unit_abbreviation,
             "quantity": item.quantity,
+            "total_amount": item.total_amount,
             "vendor": item.vendor
         }
         for item in items

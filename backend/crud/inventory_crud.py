@@ -25,6 +25,7 @@ def create_inventory(
     Validation:
     - ingredient must exist
     - unit must exist
+    - unit must be allowed for ingredient's category
     - quantities must be >= 0
     """
     # Validate ingredient exists
@@ -38,6 +39,22 @@ def create_inventory(
     unit = db.query(Unit).filter(Unit.name == payload.unit_name).first()
     if not unit:
         raise ValueError(f"Unit '{payload.unit_name}' does not exist")
+
+    # Validate unit is allowed for ingredient's category
+    from backend.models.inventory import CategoryUnit
+    allowed_units = db.query(CategoryUnit.unit_id).filter(
+        CategoryUnit.category_id == ingredient.category_id
+    ).all()
+    allowed_unit_ids = [u[0] for u in allowed_units]
+
+    if unit.id not in allowed_unit_ids:
+        category = db.query(Category).filter(
+            Category.id == ingredient.category_id
+        ).first()
+        raise ValueError(
+            f"Unit '{unit.name}' is not allowed for ingredient '{ingredient.name}' "
+            f"in category '{category.name if category else 'Unknown'}'"
+        )
 
     # Validate quantities
     if payload.standard_qty is not None and payload.standard_qty < 0:
@@ -55,8 +72,8 @@ def create_inventory(
     inventory = Inventory(
         ingredient_id=ingredient.id,
         unit_id=unit.id,
-        standard_qty=payload.standard_qty,
-        actual_qty=payload.actual_qty,
+        standard_qty=payload.standard_qty if payload.standard_qty is not None else 0,
+        actual_qty=payload.actual_qty if payload.actual_qty is not None else 0,
         location=payload.location,
         update_time=datetime.now(),
         restock_needed=restock_needed
@@ -98,6 +115,8 @@ def list_inventory(
         Inventory.restock_needed,
         IngredientRaw.name.label("ingredient_name"),
         IngredientRaw.brand,
+        IngredientRaw.threshold,
+        IngredientRaw.unit_id.label("threshold_unit_id"),
         Category.name.label("category_name"),
         Unit.abbreviation.label("unit_abbreviation")
     ).join(
@@ -130,6 +149,13 @@ def list_inventory(
         # Convert datetime to ISO string
         update_time_str = inv.update_time.isoformat() if inv.update_time else None
 
+        # Get threshold unit abbreviation
+        threshold_unit = None
+        if inv.threshold_unit_id:
+            threshold_unit_obj = db.query(Unit).filter(Unit.id == inv.threshold_unit_id).first()
+            if threshold_unit_obj:
+                threshold_unit = threshold_unit_obj.abbreviation
+
         result.append({
             "inventory_id": inv.id,
             "ingredient_id": inv.ingredient_id,
@@ -139,6 +165,8 @@ def list_inventory(
             "standard_qty": inv.standard_qty,
             "actual_qty": inv.actual_qty,
             "unit_abbreviation": inv.unit_abbreviation,
+            "threshold": inv.threshold,
+            "threshold_unit": threshold_unit,
             "location": inv.location,
             "update_time": update_time_str,
             "restock_needed": bool(inv.restock_needed)

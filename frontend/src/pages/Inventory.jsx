@@ -5,6 +5,7 @@ import {
   updateInventory,
   getIngredients,
   getUnits,
+  getCategories,
 } from '../services/api';
 import './Inventory.css';
 
@@ -12,13 +13,13 @@ function Inventory() {
   const [inventory, setInventory] = useState([]);
   const [ingredients, setIngredients] = useState([]);
   const [units, setUnits] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
 
   // 筛选和排序选项
   const [groupBy, setGroupBy] = useState(''); // '', 'location', 'restock_needed'
   const [sortBy, setSortBy] = useState(''); // '', 'actual_qty', 'standard_qty', 'update_time'
-  const [storeId, setStoreId] = useState(1);
 
   // 创建库存表单
   const [newInventory, setNewInventory] = useState({
@@ -38,7 +39,8 @@ function Inventory() {
     loadInventory();
     loadIngredients();
     loadUnits();
-  }, [groupBy, sortBy, storeId]);
+    loadCategories();
+  }, [groupBy, sortBy]);
 
   const loadInventory = async () => {
     try {
@@ -46,7 +48,6 @@ function Inventory() {
       const params = {};
       if (groupBy) params.group_by = groupBy;
       if (sortBy) params.sort_by = sortBy;
-      if (storeId) params.store_id = storeId;
 
       const response = await getInventory(params);
       setInventory(response.data);
@@ -73,6 +74,24 @@ function Inventory() {
     } catch (error) {
       console.error('加载单位失败:', error);
     }
+  };
+
+  const loadCategories = async () => {
+    try {
+      const response = await getCategories();
+      setCategories(response.data);
+    } catch (error) {
+      console.error('加载分类失败:', error);
+    }
+  };
+
+  const getUnitsForIngredient = (ingredientName) => {
+    if (!ingredientName) return [];
+    const ingredient = ingredients.find(ing => ing.name === ingredientName);
+    if (!ingredient) return [];
+    const category = categories.find(cat => cat.name === ingredient.category_name);
+    if (!category || !category.units) return [];
+    return category.units;
   };
 
   const handleCreateInventory = async (e) => {
@@ -139,13 +158,11 @@ function Inventory() {
   };
 
   const getStockStatus = (item) => {
-    if (item.restock_needed) {
+    // Check if standard quantity is below threshold
+    if (item.threshold && item.standard_qty < parseFloat(item.threshold)) {
       return { text: '需要补货', className: 'status-warning' };
     }
-    if (item.actual_qty >= item.standard_qty) {
-      return { text: '充足', className: 'status-good' };
-    }
-    return { text: '正常', className: 'status-normal' };
+    return { text: '充足', className: 'status-good' };
   };
 
   const renderGroupedInventory = () => {
@@ -158,6 +175,7 @@ function Inventory() {
                 <th>原料</th>
                 <th>分类</th>
                 <th>品牌</th>
+                <th>阈值</th>
                 <th>标准库存</th>
                 <th>实际库存</th>
                 <th>位置</th>
@@ -169,11 +187,15 @@ function Inventory() {
             <tbody>
               {inventory.map(item => {
                 const status = getStockStatus(item);
+                const isLowStock = item.actual_qty < (item.standard_qty * 0.9);
                 return (
                   <tr key={item.inventory_id}>
                     <td><strong>{item.ingredient_name}</strong></td>
                     <td>{item.category_name}</td>
                     <td>{item.brand || '-'}</td>
+                    <td>
+                      {item.threshold ? `${item.threshold} ${item.threshold_unit || ''}` : '-'}
+                    </td>
                     <td>{item.standard_qty} {item.unit_abbreviation}</td>
                     <td>
                       {editingId === item.inventory_id ? (
@@ -186,7 +208,7 @@ function Inventory() {
                           autoFocus
                         />
                       ) : (
-                        <span className={item.restock_needed ? 'low-stock' : ''}>
+                        <span className={isLowStock ? 'low-stock' : ''}>
                           {item.actual_qty} {item.unit_abbreviation}
                         </span>
                       )}
@@ -244,6 +266,7 @@ function Inventory() {
             <div className="inventory-grid">
               {items.map(item => {
                 const status = getStockStatus(item);
+                const isLowStock = item.actual_qty < (item.standard_qty * 0.9);
                 return (
                   <div key={item.inventory_id} className="inventory-card">
                     <div className="card-header">
@@ -263,6 +286,12 @@ function Inventory() {
                           <span>{item.brand}</span>
                         </div>
                       )}
+                      {item.threshold && (
+                        <div className="info-row">
+                          <span className="label">阈值:</span>
+                          <span>{item.threshold} {item.threshold_unit || ''}</span>
+                        </div>
+                      )}
                       <div className="info-row">
                         <span className="label">标准库存:</span>
                         <span>{item.standard_qty} {item.unit_abbreviation}</span>
@@ -279,7 +308,7 @@ function Inventory() {
                             autoFocus
                           />
                         ) : (
-                          <span className={item.restock_needed ? 'low-stock' : ''}>
+                          <span className={isLowStock ? 'low-stock' : ''}>
                             {item.actual_qty} {item.unit_abbreviation}
                           </span>
                         )}
@@ -335,15 +364,6 @@ function Inventory() {
       {/* 筛选和排序工具栏 */}
       <div className="toolbar">
         <div className="toolbar-section">
-          <label>门店:</label>
-          <select value={storeId} onChange={(e) => setStoreId(parseInt(e.target.value))}>
-            <option value={1}>门店 1</option>
-            <option value={2}>门店 2</option>
-            <option value={3}>门店 3</option>
-          </select>
-        </div>
-
-        <div className="toolbar-section">
           <label>分组方式:</label>
           <select value={groupBy} onChange={(e) => setGroupBy(e.target.value)}>
             <option value="">不分组</option>
@@ -377,7 +397,7 @@ function Inventory() {
                 <label>原料 *</label>
                 <select
                   value={newInventory.ingredient_name}
-                  onChange={(e) => setNewInventory({ ...newInventory, ingredient_name: e.target.value })}
+                  onChange={(e) => setNewInventory({ ...newInventory, ingredient_name: e.target.value, unit_name: '' })}
                   required
                 >
                   <option value="">选择原料</option>
@@ -393,9 +413,10 @@ function Inventory() {
                   value={newInventory.unit_name}
                   onChange={(e) => setNewInventory({ ...newInventory, unit_name: e.target.value })}
                   required
+                  disabled={!newInventory.ingredient_name}
                 >
                   <option value="">选择单位</option>
-                  {units.map(unit => (
+                  {getUnitsForIngredient(newInventory.ingredient_name).map(unit => (
                     <option key={unit.id} value={unit.name}>{unit.name}</option>
                   ))}
                 </select>

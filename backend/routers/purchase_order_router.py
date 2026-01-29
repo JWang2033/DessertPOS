@@ -138,6 +138,7 @@ def create_receiving_order(
             po_code=po.po_code,
             order_date=order_date_str,
             store_id=po.store_id,
+            total_amount=po.total_amount,
             items=items
         )
     except ValueError as e:
@@ -320,5 +321,6 @@ def get_receiving_order_detail(
         po_code=po.po_code,
         order_date=order_date_str,
         store_id=po.store_id,
+        total_amount=po.total_amount,
         items=items
     )

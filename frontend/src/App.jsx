@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import AdminSetup from './pages/AdminSetup';
 import PurchaseOrder from './pages/PurchaseOrder';
 import Inventory from './pages/Inventory';
+import DataInsight from './pages/DataInsight';
 import './App.css';
 
 function Navigation() {
@@ -32,6 +33,12 @@ function Navigation() {
           >
             库存管理
           </Link>
+          <Link
+            to="/data-insight"
+            className={location.pathname === '/data-insight' ? 'active' : ''}
+          >
+            数据洞察
+          </Link>
         </div>
       </div>
     </nav>
@@ -49,6 +56,7 @@ function App() {
             <Route path="/admin-setup" element={<AdminSetup />} />
             <Route path="/purchase-order" element={<PurchaseOrder />} />
             <Route path="/inventory" element={<Inventory />} />
+            <Route path="/data-insight" element={<DataInsight />} />
           </Routes>
         </main>
       </div>

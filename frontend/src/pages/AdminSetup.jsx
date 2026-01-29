@@ -307,7 +307,7 @@ function AdminSetup() {
   const handleAddIngredientRow = () => {
     setNewProduct({
       ...newProduct,
-      ingredients: [...newProduct.ingredients, { ingredient_name: '', quantity: '', unit_name: '' }]
+      ingredients: [...newProduct.ingredients, { ingredient_name: '', quantity: '', unit_name: '', category_name: '' }]
     });
   };
 
@@ -316,15 +316,23 @@ function AdminSetup() {
     setNewProduct({ ...newProduct, ingredients: updatedIngredients });
   };
 
+  // Get available units for a given category name
+  const getUnitsForCategory = (categoryName) => {
+    if (!categoryName) return [];
+    const category = categories.find(cat => cat.name === categoryName);
+    return category?.units || [];
+  };
+
   const handleIngredientChange = (index, field, value) => {
     const updatedIngredients = [...newProduct.ingredients];
     updatedIngredients[index][field] = value;
 
-    // Auto-fill unit when ingredient is selected
+    // When ingredient is selected, clear unit and store category info
     if (field === 'ingredient_name' && value) {
       const selectedIngredient = ingredients.find(ing => ing.name === value);
       if (selectedIngredient) {
-        updatedIngredients[index].unit_name = selectedIngredient.unit_name;
+        updatedIngredients[index].category_name = selectedIngredient.category_name;
+        updatedIngredients[index].unit_name = ''; // Clear unit for user to select
       }
     }
 
@@ -375,11 +383,15 @@ function AdminSetup() {
       originalName: product.name,
       name: product.name,
       prep_time_hours: product.prep_time_hours,
-      ingredients: product.ingredients.map(ing => ({
-        ingredient_name: ing.ingredient_name,
-        quantity: ing.quantity,
-        unit_name: ing.unit_abbreviation
-      }))
+      ingredients: product.ingredients.map(ing => {
+        const ingredient = ingredients.find(i => i.name === ing.ingredient_name);
+        return {
+          ingredient_name: ing.ingredient_name,
+          quantity: ing.quantity,
+          unit_name: ing.unit_abbreviation,
+          category_name: ingredient?.category_name || ''
+        };
+      })
     });
   };
 
@@ -387,11 +399,12 @@ function AdminSetup() {
     const updatedIngredients = [...editingProduct.ingredients];
     updatedIngredients[index][field] = value;
 
-    // Auto-fill unit when ingredient is selected
+    // When ingredient is selected, clear unit and store category info
     if (field === 'ingredient_name' && value) {
       const selectedIngredient = ingredients.find(ing => ing.name === value);
       if (selectedIngredient) {
-        updatedIngredients[index].unit_name = selectedIngredient.unit_name;
+        updatedIngredients[index].category_name = selectedIngredient.category_name;
+        updatedIngredients[index].unit_name = ''; // Clear unit for user to select
       }
     }
 
@@ -401,7 +414,7 @@ function AdminSetup() {
   const handleAddEditIngredientRow = () => {
     setEditingProduct({
       ...editingProduct,
-      ingredients: [...editingProduct.ingredients, { ingredient_name: '', quantity: '', unit_name: '' }]
+      ingredients: [...editingProduct.ingredients, { ingredient_name: '', quantity: '', unit_name: '', category_name: '' }]
     });
   };
 
@@ -631,18 +644,6 @@ function AdminSetup() {
                   </select>
                 </div>
                 <div className="form-field">
-                  <label>单位 *</label>
-                  <select
-                    value={newIngredient.unit_name}
-                    onChange={(e) => setNewIngredient({ ...newIngredient, unit_name: e.target.value })}
-                  >
-                    <option value="">选择单位</option>
-                    {units.map(unit => (
-                      <option key={unit.id} value={unit.name}>{unit.name} ({unit.abbreviation})</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-field">
                   <label>品牌(可选)</label>
                   <input
                     type="text"
@@ -660,6 +661,18 @@ function AdminSetup() {
                     value={newIngredient.threshold}
                     onChange={(e) => setNewIngredient({ ...newIngredient, threshold: e.target.value })}
                   />
+                </div>
+                <div className="form-field">
+                  <label>阈值单位 *</label>
+                  <select
+                    value={newIngredient.unit_name}
+                    onChange={(e) => setNewIngredient({ ...newIngredient, unit_name: e.target.value })}
+                  >
+                    <option value="">选择单位</option>
+                    {units.map(unit => (
+                      <option key={unit.id} value={unit.name}>{unit.name} ({unit.abbreviation})</option>
+                    ))}
+                  </select>
                 </div>
               </div>
               <button type="submit" className="submit-btn">创建原料</button>
@@ -692,18 +705,6 @@ function AdminSetup() {
                         </select>
                       </div>
                       <div className="form-field">
-                        <label>单位 *</label>
-                        <select
-                          value={editingIngredient.unit_name}
-                          onChange={(e) => setEditingIngredient({ ...editingIngredient, unit_name: e.target.value })}
-                        >
-                          <option value="">选择单位</option>
-                          {units.map(unit => (
-                            <option key={unit.id} value={unit.name}>{unit.name} ({unit.abbreviation})</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="form-field">
                         <label>品牌(可选)</label>
                         <input
                           type="text"
@@ -719,6 +720,18 @@ function AdminSetup() {
                           value={editingIngredient.threshold}
                           onChange={(e) => setEditingIngredient({ ...editingIngredient, threshold: e.target.value })}
                         />
+                      </div>
+                      <div className="form-field">
+                        <label>阈值单位 *</label>
+                        <select
+                          value={editingIngredient.unit_name}
+                          onChange={(e) => setEditingIngredient({ ...editingIngredient, unit_name: e.target.value })}
+                        >
+                          <option value="">选择单位</option>
+                          {units.map(unit => (
+                            <option key={unit.id} value={unit.name}>{unit.name} ({unit.abbreviation})</option>
+                          ))}
+                        </select>
                       </div>
                     </div>
                     <div className="modal-actions">
@@ -742,10 +755,6 @@ function AdminSetup() {
                     <span className="field-label">分类:</span>
                     <span className="field-value">{ing.category_name}</span>
                   </div>
-                  <div className="card-field">
-                    <span className="field-label">单位:</span>
-                    <span className="field-value">{ing.unit_name}</span>
-                  </div>
                   {ing.brand && (
                     <div className="card-field">
                       <span className="field-label">品牌:</span>
@@ -755,7 +764,7 @@ function AdminSetup() {
                   {ing.threshold && (
                     <div className="card-field">
                       <span className="field-label">阈值:</span>
-                      <span className="field-value">{ing.threshold}</span>
+                      <span className="field-value">{ing.threshold} {ing.unit_name}</span>
                     </div>
                   )}
                   <div className="card-actions">
@@ -816,7 +825,7 @@ function AdminSetup() {
                     {newProduct.ingredients.length === 0 ? (
                       <tr>
                         <td colSpan="4" style={{ textAlign: 'center', color: '#999' }}>
-                          (只能从已有的ingredients里面选，支持autofill)
+                          (只能从已有的ingredients里面选)
                         </td>
                       </tr>
                     ) : (
@@ -845,13 +854,18 @@ function AdminSetup() {
                             />
                           </td>
                           <td>
-                            <input
-                              type="text"
+                            <select
                               value={ing.unit_name}
-                              readOnly
-                              placeholder="单位"
-                              style={{ backgroundColor: '#f5f5f5' }}
-                            />
+                              onChange={(e) => handleIngredientChange(index, 'unit_name', e.target.value)}
+                              disabled={!ing.ingredient_name}
+                            >
+                              <option value="">选择单位</option>
+                              {getUnitsForCategory(ing.category_name).map(unit => (
+                                <option key={unit.id} value={unit.name}>
+                                  {unit.name} ({unit.abbreviation})
+                                </option>
+                              ))}
+                            </select>
                           </td>
                           <td>
                             <button
@@ -953,13 +967,18 @@ function AdminSetup() {
                                 />
                               </td>
                               <td>
-                                <input
-                                  type="text"
+                                <select
                                   value={ing.unit_name}
-                                  readOnly
-                                  placeholder="单位"
-                                  style={{ backgroundColor: '#f5f5f5' }}
-                                />
+                                  onChange={(e) => handleEditIngredientChange(index, 'unit_name', e.target.value)}
+                                  disabled={!ing.ingredient_name}
+                                >
+                                  <option value="">选择单位</option>
+                                  {getUnitsForCategory(ing.category_name).map(unit => (
+                                    <option key={unit.id} value={unit.name}>
+                                      {unit.name} ({unit.abbreviation})
+                                    </option>
+                                  ))}
+                                </select>
                               </td>
                               <td>
                                 <button

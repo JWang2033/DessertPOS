@@ -108,6 +108,7 @@ class PurchaseOrder(Base):
     po_code = Column(String(50), nullable=False, unique=True, comment="Unique purchase order code (e.g., PO-20260119-0001)")
     order_date = Column(String(10), nullable=False, comment="Date in YYYY-MM-DD format")
     store_id = Column(String(10), nullable=False)
+    total_amount = Column(DECIMAL(10, 2), nullable=False, default=0.00, comment="Total amount for the entire purchase order in dollars")
 
 
 class PurchaseOrderItem(Base):
@@ -120,6 +121,7 @@ class PurchaseOrderItem(Base):
     unit_id = Column(BigInteger, ForeignKey("units.id"), nullable=False)
     quantity = Column(DECIMAL(10, 2), nullable=False)
     vendor = Column(String(100), nullable=True, comment="Vendor for this specific ingredient")
+    total_amount = Column(DECIMAL(10, 2), nullable=False, default=0.00, comment="Total amount for this purchase item in dollars")
 
 
 class Inventory(Base):

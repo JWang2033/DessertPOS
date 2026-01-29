@@ -208,6 +208,7 @@ class PurchaseOrderItemBase(BaseModel):
     ingredient_name: str = Field(..., description="Name of the ingredient")
     unit_name: str = Field(..., description="Name of the unit")
     quantity: Decimal = Field(..., gt=0, description="Quantity received (must be > 0)")
+    total_amount: Decimal = Field(..., gt=0, description="Total amount for this item in dollars")
     vendor: Optional[str] = Field(None, max_length=100, description="Vendor for this ingredient (optional)")
 
 
@@ -224,6 +225,7 @@ class PurchaseOrderItemOut(BaseModel):
     unit_id: int
     unit_abbreviation: str = Field(..., description="Denormalized unit abbreviation")
     quantity: Decimal
+    total_amount: Decimal = Field(..., description="Total amount for this item in dollars")
     vendor: Optional[str] = Field(None, description="Vendor for this ingredient")
 
     class Config:
@@ -245,6 +247,7 @@ class PurchaseOrderOut(PurchaseOrderBase):
     """Output schema for purchase order with full details"""
     id: int
     po_code: str = Field(..., description="Unique purchase order code (e.g., PO-20260119-0001)")
+    total_amount: Decimal = Field(..., description="Total amount for the entire purchase order in dollars")
     items: List[PurchaseOrderItemOut] = Field(default_factory=list, description="List of received items")
 
     class Config:
@@ -257,6 +260,7 @@ class PurchaseOrderListOut(BaseModel):
     po_code: str
     order_date: str
     store_id: str
+    total_amount: Decimal = Field(..., description="Total amount for the purchase order in dollars")
     total_items_count: int = Field(..., description="Number of items in this purchase order")
 
     class Config:
@@ -293,6 +297,8 @@ class InventoryOut(BaseModel):
     standard_qty: Optional[Decimal]
     actual_qty: Optional[Decimal]
     unit_abbreviation: str
+    threshold: Optional[Decimal] = Field(None, description="Threshold from ingredient")
+    threshold_unit: Optional[str] = Field(None, description="Unit abbreviation for threshold")
     location: str
     update_time: str = Field(..., description="Last update time in ISO format")
     restock_needed: bool = Field(..., description="True if restock is needed based on threshold")

@@ -23,10 +23,21 @@ def create_ingredient(db: Session, payload: IngredientCreate) -> IngredientRaw:
         raise ValueError(f"Category with name '{payload.category_name}' does not exist")
 
     # Validate unit exists by name
-    from backend.models.inventory import Unit
+    from backend.models.inventory import Unit, CategoryUnit
     unit = db.query(Unit).filter(Unit.name == payload.unit_name).first()
     if not unit:
         raise ValueError(f"Unit with name '{payload.unit_name}' does not exist")
+
+    # Validate unit is allowed for this category
+    allowed_units = db.query(CategoryUnit.unit_id).filter(
+        CategoryUnit.category_id == category.id
+    ).all()
+    allowed_unit_ids = [u[0] for u in allowed_units]
+
+    if unit.id not in allowed_unit_ids:
+        raise ValueError(
+            f"Unit '{unit.name}' is not allowed for category '{category.name}'"
+        )
 
     # Validate allergen IDs exist
     if payload.allergen_ids:

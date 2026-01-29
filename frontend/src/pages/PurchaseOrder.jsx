@@ -5,6 +5,7 @@ import {
   getPurchaseOrderById,
   getIngredients,
   getUnits,
+  getCategories,
 } from '../services/api';
 import './PurchaseOrder.css';
 
@@ -12,6 +13,7 @@ function PurchaseOrder() {
   const [purchaseOrders, setPurchaseOrders] = useState([]);
   const [ingredients, setIngredients] = useState([]);
   const [units, setUnits] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -19,13 +21,14 @@ function PurchaseOrder() {
   // 采购单表单
   const [orderForm, setOrderForm] = useState({
     store_id: 1, // 默认门店
-    items: [{ ingredient_name: '', unit_name: '', quantity: '', unit_price: '', vendor: '' }],
+    items: [{ ingredient_name: '', unit_name: '', quantity: '', total_amount: '', vendor: '' }],
   });
 
   useEffect(() => {
     loadPurchaseOrders();
     loadIngredients();
     loadUnits();
+    loadCategories();
   }, []);
 
   const loadPurchaseOrders = async () => {
@@ -58,10 +61,28 @@ function PurchaseOrder() {
     }
   };
 
+  const loadCategories = async () => {
+    try {
+      const response = await getCategories();
+      setCategories(response.data);
+    } catch (error) {
+      console.error('加载分类失败:', error);
+    }
+  };
+
+  const getUnitsForIngredient = (ingredientName) => {
+    if (!ingredientName) return [];
+    const ingredient = ingredients.find(ing => ing.name === ingredientName);
+    if (!ingredient) return [];
+    const category = categories.find(cat => cat.name === ingredient.category_name);
+    if (!category || !category.units) return [];
+    return category.units;
+  };
+
   const handleAddItem = () => {
     setOrderForm({
       ...orderForm,
-      items: [...orderForm.items, { ingredient_name: '', unit_name: '', quantity: '', unit_price: '', vendor: '' }],
+      items: [...orderForm.items, { ingredient_name: '', unit_name: '', quantity: '', total_amount: '', vendor: '' }],
     });
   };
 
@@ -73,6 +94,10 @@ function PurchaseOrder() {
   const handleItemChange = (index, field, value) => {
     const newItems = [...orderForm.items];
     newItems[index][field] = value;
+    // Clear unit when ingredient changes
+    if (field === 'ingredient_name') {
+      newItems[index]['unit_name'] = '';
+    }
     setOrderForm({ ...orderForm, items: newItems });
   };
 
@@ -86,7 +111,7 @@ function PurchaseOrder() {
     }
 
     for (let item of orderForm.items) {
-      if (!item.ingredient_name || !item.unit_name || !item.quantity || !item.unit_price) {
+      if (!item.ingredient_name || !item.unit_name || !item.quantity || !item.total_amount) {
         alert('请填写完整的采购项信息');
         return;
       }
@@ -101,6 +126,7 @@ function PurchaseOrder() {
           ingredient_name: item.ingredient_name,
           unit_name: item.unit_name,
           quantity: parseFloat(item.quantity),
+          total_amount: parseFloat(item.total_amount),
           vendor: item.vendor || null,
         })),
       };
@@ -110,7 +136,7 @@ function PurchaseOrder() {
       setShowCreateForm(false);
       setOrderForm({
         store_id: 1,
-        items: [{ ingredient_name: '', unit_name: '', quantity: '', unit_price: '', vendor: '' }],
+        items: [{ ingredient_name: '', unit_name: '', quantity: '', total_amount: '', vendor: '' }],
       });
       loadPurchaseOrders();
     } catch (error) {
@@ -127,12 +153,8 @@ function PurchaseOrder() {
     }
   };
 
-  const calculateItemTotal = (item) => {
-    return (parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0);
-  };
-
   const calculateOrderTotal = () => {
-    return orderForm.items.reduce((sum, item) => sum + calculateItemTotal(item), 0);
+    return orderForm.items.reduce((sum, item) => sum + (parseFloat(item.total_amount) || 0), 0);
   };
 
   return (
@@ -178,9 +200,10 @@ function PurchaseOrder() {
                     value={item.unit_name}
                     onChange={(e) => handleItemChange(index, 'unit_name', e.target.value)}
                     required
+                    disabled={!item.ingredient_name}
                   >
                     <option value="">选择单位</option>
-                    {units.map(unit => (
+                    {getUnitsForIngredient(item.ingredient_name).map(unit => (
                       <option key={unit.id} value={unit.name}>{unit.name}</option>
                     ))}
                   </select>
@@ -197,9 +220,9 @@ function PurchaseOrder() {
                   <input
                     type="number"
                     step="0.01"
-                    placeholder="单价"
-                    value={item.unit_price}
-                    onChange={(e) => handleItemChange(index, 'unit_price', e.target.value)}
+                    placeholder="总金额"
+                    value={item.total_amount}
+                    onChange={(e) => handleItemChange(index, 'total_amount', e.target.value)}
                     required
                   />
 
@@ -209,10 +232,6 @@ function PurchaseOrder() {
                     value={item.vendor}
                     onChange={(e) => handleItemChange(index, 'vendor', e.target.value)}
                   />
-
-                  <div className="item-total">
-                    小计: ¥{calculateItemTotal(item).toFixed(2)}
-                  </div>
 
                   {orderForm.items.length > 1 && (
                     <button
@@ -232,7 +251,7 @@ function PurchaseOrder() {
             </button>
 
             <div className="form-total">
-              <strong>总金额: ¥{calculateOrderTotal().toFixed(2)}</strong>
+              <strong>总金额: ${calculateOrderTotal().toFixed(2)}</strong>
             </div>
 
             <div className="form-actions">
@@ -264,7 +283,7 @@ function PurchaseOrder() {
                 </div>
                 <div className="order-info">
                   <div>门店: {order.store_id}</div>
-                  <div className="order-total">总金额: ￥{order.total_amount?.toFixed(2) || '0.00'}</div>
+                  <div className="order-total">总金额: ${parseFloat(order.total_amount || 0).toFixed(2)}</div>
                 </div>
                 <button className="view-btn" onClick={() => handleViewOrder(order)}>
                   查看详情
@@ -291,7 +310,7 @@ function PurchaseOrder() {
                 <strong>创建时间:</strong> {new Date(selectedOrder.order_date).toLocaleString('zh-CN')}
               </div>
               <div className="detail-row">
-                <strong>总金额:</strong> ¥{selectedOrder.total_amount?.toFixed(2) || '0.00'}
+                <strong>总金额:</strong> ${parseFloat(selectedOrder.total_amount || 0).toFixed(2)}
               </div>
 
               <h3>采购明细</h3>
@@ -301,8 +320,7 @@ function PurchaseOrder() {
                     <th>原料</th>
                     <th>分类</th>
                     <th>数量</th>
-                    <th>单价</th>
-                    <th>小计</th>
+                    <th>总金额</th>
                     <th>供应商</th>
                   </tr>
                 </thead>
@@ -312,8 +330,7 @@ function PurchaseOrder() {
                       <td>{item.ingredient_name}</td>
                       <td>{item.category_name}</td>
                       <td>{item.quantity} {item.unit_abbreviation}</td>
-                      <td>¥{item.unit_price?.toFixed(2)}</td>
-                      <td>¥{item.subtotal?.toFixed(2)}</td>
+                      <td>${parseFloat(item.total_amount || 0).toFixed(2)}</td>
                       <td>{item.vendor || '-'}</td>
                     </tr>
                   ))}

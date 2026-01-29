@@ -23,11 +23,10 @@ pip install -r requirements.txt
 <!-- tree:start -->
 ```
 .
-├── ADMIN_SETUP_API.md
-├── FRONTEND_GUIDE.md
-├── README.md
+├── add_total_amount_columns.sql
 ├── add_unit_to_ingredients.sql
 ├── add_vendor_to_items.sql
+├── ADMIN_SETUP_API.md
 ├── backend
 │   ├── __init__.py
 │   ├── config.py
@@ -72,10 +71,11 @@ pip install -r requirements.txt
 │   │   └── user_schemas.py
 │   └── utils
 │       ├── auth_dependencies.py
-│       └── security.py
+│       ├── security.py
+│       └── unit_converter.py
+├── check_and_fix_db.py
 ├── create_inventory.sql
 ├── frontend
-│   ├── README.md
 │   ├── index.html
 │   ├── node_modules
 │   │   ├── @alloc
@@ -158,6 +158,7 @@ pip install -r requirements.txt
 │   │   └── yallist
 │   ├── package-lock.json
 │   ├── package.json
+│   ├── README.md
 │   ├── src
 │   │   ├── App.css
 │   │   ├── App.jsx
@@ -166,11 +167,14 @@ pip install -r requirements.txt
 │   │   ├── pages
 │   │   └── services
 │   └── vite.config.js
+├── FRONTEND_GUIDE.md
 ├── init_inventory_db.py
 ├── main.py
 ├── order_tables.sql
 ├── product_tables.sql
 ├── project_structure.txt
+├── PURCHASE_ORDER_FIX_INSTRUCTIONS.md
+├── README.md
 ├── requirements.txt
 ├── start.sh
 ├── stop.sh
@@ -181,7 +185,7 @@ pip install -r requirements.txt
 ├── test_purchase_orders.sh
 └── update_db_structure.py
 
-90 directories, 68 files
+90 directories, 72 files
 ```
 <!-- tree:end -->
 
