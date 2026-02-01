@@ -23,10 +23,14 @@ pip install -r requirements.txt
 <!-- tree:start -->
 ```
 .
+├── ADMIN_SETUP_API.md
+├── FRONTEND_GUIDE.md
+├── PURCHASE_ORDER_FIX_INSTRUCTIONS.md
+├── README.md
+├── add_threshold_to_semi_products.sql
 ├── add_total_amount_columns.sql
 ├── add_unit_to_ingredients.sql
 ├── add_vendor_to_items.sql
-├── ADMIN_SETUP_API.md
 ├── backend
 │   ├── __init__.py
 │   ├── config.py
@@ -75,7 +79,9 @@ pip install -r requirements.txt
 │       └── unit_converter.py
 ├── check_and_fix_db.py
 ├── create_inventory.sql
+├── create_semi_product_inventory.sql
 ├── frontend
+│   ├── README.md
 │   ├── index.html
 │   ├── node_modules
 │   │   ├── @alloc
@@ -158,7 +164,6 @@ pip install -r requirements.txt
 │   │   └── yallist
 │   ├── package-lock.json
 │   ├── package.json
-│   ├── README.md
 │   ├── src
 │   │   ├── App.css
 │   │   ├── App.jsx
@@ -167,14 +172,11 @@ pip install -r requirements.txt
 │   │   ├── pages
 │   │   └── services
 │   └── vite.config.js
-├── FRONTEND_GUIDE.md
 ├── init_inventory_db.py
 ├── main.py
 ├── order_tables.sql
 ├── product_tables.sql
 ├── project_structure.txt
-├── PURCHASE_ORDER_FIX_INSTRUCTIONS.md
-├── README.md
 ├── requirements.txt
 ├── start.sh
 ├── stop.sh
@@ -185,7 +187,7 @@ pip install -r requirements.txt
 ├── test_purchase_orders.sh
 └── update_db_structure.py
 
-90 directories, 72 files
+90 directories, 74 files
 ```
 <!-- tree:end -->
 
@@ -333,6 +335,7 @@ pip install -r requirements.txt
 | unit_id | bigint unsigned |  | ❌ |  |  |
 | quantity | decimal(10,2) |  | ❌ |  |  |
 | vendor | varchar(100) |  | ✅ |  | Vendor for this specific ingredient |
+| total_amount | decimal(10,2) |  | ✅ | 0.00 | Total amount for this purchase item in dollars |
 
 ---
 
@@ -344,6 +347,7 @@ pip install -r requirements.txt
 | po_code | varchar(50) |  | ❌ |  |  |
 | order_date | date |  | ❌ |  |  |
 | store_id | varchar(10) |  | ❌ |  |  |
+| total_amount | decimal(10,2) |  | ✅ | 0.00 | Total amount for the entire purchase order in dollars |
 
 ---
 
@@ -406,6 +410,23 @@ pip install -r requirements.txt
 | id | bigint unsigned | ✅ | ❌ |  |  |
 | name | varchar(100) |  | ❌ |  |  |
 | prep_time_hours | decimal(5,2) |  | ❌ |  |  |
+| threshold | decimal(10,2) |  | ✅ |  | Low stock threshold |
+| unit_id | bigint unsigned |  | ✅ |  |  |
+
+---
+
+### `semi_product_inventory` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
+|--------|------|------|------|--------|------|
+| id | bigint unsigned | ✅ | ❌ |  |  |
+| semi_product_id | bigint unsigned |  | ❌ |  |  |
+| unit_id | bigint unsigned |  | ❌ |  |  |
+| standard_qty | decimal(10,2) |  | ✅ |  | Standard quantity to maintain |
+| actual_qty | decimal(10,2) |  | ✅ |  | Current actual quantity in stock |
+| location | varchar(100) |  | ❌ |  | Storage location |
+| update_time | datetime |  | ❌ |  | Last update timestamp |
+| restock_needed | int |  | ❌ | 0 | 1 if restock needed, 0 otherwise |
 
 ---
 

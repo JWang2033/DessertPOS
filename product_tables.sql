@@ -52,3 +52,8 @@ CREATE TABLE IF NOT EXISTS order_items (
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
   COMMENT='module: order; 订单明细（产品+修饰项JSON）';
+
+ALTER TABLE semi_finished_products
+ADD COLUMN threshold DECIMAL(10, 2) COMMENT 'Low stock threshold',
+ADD COLUMN unit_id BIGINT UNSIGNED,
+ADD CONSTRAINT fk_semi_product_unit FOREIGN KEY (unit_id) REFERENCES units(id);

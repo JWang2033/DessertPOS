@@ -16,6 +16,7 @@ function Inventory() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [inventoryType, setInventoryType] = useState('ingredient'); // 'ingredient' or 'semi_product'
 
   // 筛选和排序选项
   const [groupBy, setGroupBy] = useState(''); // '', 'location', 'restock_needed'
@@ -40,7 +41,7 @@ function Inventory() {
     loadIngredients();
     loadUnits();
     loadCategories();
-  }, [groupBy, sortBy]);
+  }, [groupBy, sortBy, inventoryType]);
 
   const loadInventory = async () => {
     try {
@@ -50,7 +51,9 @@ function Inventory() {
       if (sortBy) params.sort_by = sortBy;
 
       const response = await getInventory(params);
-      setInventory(response.data);
+      // Filter inventory based on selected type
+      const filteredInventory = response.data.filter(item => item.item_type === inventoryType);
+      setInventory(filteredInventory);
     } catch (error) {
       alert('加载库存失败: ' + (error.response?.data?.detail || error.message));
     } finally {
@@ -165,6 +168,14 @@ function Inventory() {
     return { text: '充足', className: 'status-good' };
   };
 
+  const calculateStockPercentage = (actualQty, standardQty) => {
+    if (!standardQty || parseFloat(standardQty) === 0) {
+      return '-';
+    }
+    const percentage = (parseFloat(actualQty || 0) / parseFloat(standardQty)) * 100;
+    return `${percentage.toFixed(1)}%`;
+  };
+
   const renderGroupedInventory = () => {
     if (!groupBy) {
       return (
@@ -172,12 +183,13 @@ function Inventory() {
           <table className="inventory-table">
             <thead>
               <tr>
-                <th>原料</th>
-                <th>分类</th>
-                <th>品牌</th>
+                <th>{inventoryType === 'ingredient' ? '原料' : '半成品'}</th>
+                {inventoryType === 'ingredient' && <th>分类</th>}
+                {inventoryType === 'ingredient' && <th>品牌</th>}
                 <th>阈值</th>
                 <th>标准库存</th>
                 <th>实际库存</th>
+                <th>实际百分比</th>
                 <th>位置</th>
                 <th>状态</th>
                 <th>更新时间</th>
@@ -191,8 +203,8 @@ function Inventory() {
                 return (
                   <tr key={item.inventory_id}>
                     <td><strong>{item.ingredient_name}</strong></td>
-                    <td>{item.category_name}</td>
-                    <td>{item.brand || '-'}</td>
+                    {inventoryType === 'ingredient' && <td>{item.category_name}</td>}
+                    {inventoryType === 'ingredient' && <td>{item.brand || '-'}</td>}
                     <td>
                       {item.threshold ? `${item.threshold} ${item.threshold_unit || ''}` : '-'}
                     </td>
@@ -213,6 +225,7 @@ function Inventory() {
                         </span>
                       )}
                     </td>
+                    <td>{calculateStockPercentage(item.actual_qty, item.standard_qty)}</td>
                     <td>{item.location || '-'}</td>
                     <td>
                       <span className={`status-badge ${status.className}`}>
@@ -276,11 +289,13 @@ function Inventory() {
                       </span>
                     </div>
                     <div className="card-body">
-                      <div className="info-row">
-                        <span className="label">分类:</span>
-                        <span>{item.category_name}</span>
-                      </div>
-                      {item.brand && (
+                      {inventoryType === 'ingredient' && (
+                        <div className="info-row">
+                          <span className="label">分类:</span>
+                          <span>{item.category_name}</span>
+                        </div>
+                      )}
+                      {inventoryType === 'ingredient' && item.brand && (
                         <div className="info-row">
                           <span className="label">品牌:</span>
                           <span>{item.brand}</span>
@@ -312,6 +327,10 @@ function Inventory() {
                             {item.actual_qty} {item.unit_abbreviation}
                           </span>
                         )}
+                      </div>
+                      <div className="info-row">
+                        <span className="label">实际百分比:</span>
+                        <span>{calculateStockPercentage(item.actual_qty, item.standard_qty)}</span>
                       </div>
                       {item.location && (
                         <div className="info-row">
@@ -358,6 +377,22 @@ function Inventory() {
         <h1>库存管理</h1>
         <button className="create-btn" onClick={() => setShowCreateForm(!showCreateForm)}>
           {showCreateForm ? '取消创建' : '+ 新建库存'}
+        </button>
+      </div>
+
+      {/* Tab switching for inventory type */}
+      <div className="inventory-tabs">
+        <button
+          className={`tab-btn ${inventoryType === 'ingredient' ? 'active' : ''}`}
+          onClick={() => setInventoryType('ingredient')}
+        >
+          原料库存
+        </button>
+        <button
+          className={`tab-btn ${inventoryType === 'semi_product' ? 'active' : ''}`}
+          onClick={() => setInventoryType('semi_product')}
+        >
+          半成品库存
         </button>
       </div>
 

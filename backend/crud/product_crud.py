@@ -26,6 +26,14 @@ def create_semi_finished_product(
     if payload.prep_time_hours <= 0:
         raise ValueError("Preparation time must be greater than 0")
 
+    # Validate and get unit_id if unit_name provided
+    unit_id = None
+    if payload.unit_name:
+        unit = db.query(Unit).filter(Unit.name == payload.unit_name).first()
+        if not unit:
+            raise ValueError(f"Unit '{payload.unit_name}' does not exist")
+        unit_id = unit.id
+
     # Validate all ingredients and units exist
     ingredient_details = []
     for ing_data in payload.ingredients:
@@ -69,7 +77,9 @@ def create_semi_finished_product(
     # Create semi-finished product
     product = SemiFinishedProduct(
         name=payload.name,
-        prep_time_hours=payload.prep_time_hours
+        prep_time_hours=payload.prep_time_hours,
+        threshold=payload.threshold,
+        unit_id=unit_id
     )
     db.add(product)
     db.flush()  # Get the ID
@@ -166,10 +176,19 @@ def list_semi_finished_products(
             SemiFinishedProductIngredient.semi_finished_product_id == product.id
         ).count()
 
+        # Get unit abbreviation if unit_id exists
+        unit_abbreviation = None
+        if product.unit_id:
+            unit = db.query(Unit).filter(Unit.id == product.unit_id).first()
+            if unit:
+                unit_abbreviation = unit.abbreviation
+
         result.append({
             "id": product.id,
             "name": product.name,
             "prep_time_hours": product.prep_time_hours,
+            "threshold": product.threshold,
+            "unit_abbreviation": unit_abbreviation,
             "ingredient_count": ingredient_count
         })
 
@@ -203,6 +222,15 @@ def update_semi_finished_product(
         if payload.prep_time_hours <= 0:
             raise ValueError("Preparation time must be greater than 0")
         product.prep_time_hours = payload.prep_time_hours
+
+    if payload.threshold is not None:
+        product.threshold = payload.threshold
+
+    if payload.unit_name is not None:
+        unit = db.query(Unit).filter(Unit.name == payload.unit_name).first()
+        if not unit:
+            raise ValueError(f"Unit '{payload.unit_name}' does not exist")
+        product.unit_id = unit.id
 
     # Update ingredients if provided
     if payload.ingredients is not None:

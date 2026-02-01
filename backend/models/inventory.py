@@ -69,6 +69,8 @@ class SemiFinishedProduct(Base):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False, unique=True)
     prep_time_hours = Column(DECIMAL(5, 2), nullable=False, comment="Preparation time in hours")
+    threshold = Column(DECIMAL(10, 2), nullable=True, comment="Low stock threshold")
+    unit_id = Column(BigInteger, ForeignKey("units.id"), nullable=True)
 
 
 class SemiFinishedProductIngredient(Base):
@@ -130,6 +132,20 @@ class Inventory(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     ingredient_id = Column(BigInteger, ForeignKey("ingredients.id"), nullable=False)
+    unit_id = Column(BigInteger, ForeignKey("units.id"), nullable=False)
+    standard_qty = Column(DECIMAL(10, 2), nullable=True, comment="Standard quantity to maintain")
+    actual_qty = Column(DECIMAL(10, 2), nullable=True, comment="Current actual quantity in stock")
+    location = Column(String(100), nullable=False, comment="Storage location")
+    update_time = Column(DateTime, nullable=False, comment="Last update timestamp")
+    restock_needed = Column(Integer, nullable=False, default=0, comment="1 if restock needed, 0 otherwise")
+
+
+class SemiProductInventory(Base):
+    """Inventory tracking for semi-finished products"""
+    __tablename__ = "semi_product_inventory"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    semi_product_id = Column(BigInteger, ForeignKey("semi_finished_products.id"), nullable=False)
     unit_id = Column(BigInteger, ForeignKey("units.id"), nullable=False)
     standard_qty = Column(DECIMAL(10, 2), nullable=True, comment="Standard quantity to maintain")
     actual_qty = Column(DECIMAL(10, 2), nullable=True, comment="Current actual quantity in stock")

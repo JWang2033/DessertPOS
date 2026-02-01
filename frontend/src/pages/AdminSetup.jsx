@@ -30,7 +30,7 @@ function AdminSetup() {
   const [newUnit, setNewUnit] = useState({ name: '', abbreviation: '' });
   const [newCategory, setNewCategory] = useState({ name: '', selectedUnits: [] });
   const [newIngredient, setNewIngredient] = useState({ name: '', category_name: '', unit_name: '', brand: '', threshold: '' });
-  const [newProduct, setNewProduct] = useState({ name: '', prep_time_hours: '', ingredients: [] });
+  const [newProduct, setNewProduct] = useState({ name: '', prep_time_hours: '', threshold: '', unit_name: '', ingredients: [] });
   const [editingCategory, setEditingCategory] = useState(null);
   const [editingIngredient, setEditingIngredient] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -44,6 +44,7 @@ function AdminSetup() {
       loadIngredients();
     }
     else if (activeTab === 'products') {
+      loadCategories(); // Load categories for unit filtering
       loadIngredients(); // Load ingredients for product creation
       loadProducts();
     }
@@ -362,6 +363,8 @@ function AdminSetup() {
       const productData = {
         name: newProduct.name,
         prep_time_hours: parseFloat(newProduct.prep_time_hours),
+        threshold: newProduct.threshold ? parseFloat(newProduct.threshold) : null,
+        unit_name: newProduct.unit_name || null,
         ingredients: newProduct.ingredients.map(ing => ({
           ingredient_name: ing.ingredient_name,
           quantity: parseFloat(ing.quantity),
@@ -370,7 +373,7 @@ function AdminSetup() {
       };
 
       await createProduct(productData);
-      setNewProduct({ name: '', prep_time_hours: '', ingredients: [] });
+      setNewProduct({ name: '', prep_time_hours: '', threshold: '', unit_name: '', ingredients: [] });
       loadProducts();
       alert('创建成功');
     } catch (error) {
@@ -379,16 +382,31 @@ function AdminSetup() {
   };
 
   const handleStartEditProduct = (product) => {
+    // Helper to find unit name from abbreviation
+    const getUnitNameFromAbbrev = (abbreviation) => {
+      if (!abbreviation) return '';
+      const unit = units.find(u => u.abbreviation === abbreviation);
+      return unit ? unit.name : '';
+    };
+
+    console.log('Edit product - units loaded:', units.length);
+    console.log('Edit product - categories loaded:', categories.length);
+    console.log('Product data:', product);
+
     setEditingProduct({
       originalName: product.name,
       name: product.name,
       prep_time_hours: product.prep_time_hours,
+      threshold: product.threshold || '',
+      unit_name: getUnitNameFromAbbrev(product.unit_abbreviation),
       ingredients: product.ingredients.map(ing => {
         const ingredient = ingredients.find(i => i.name === ing.ingredient_name);
+        const unitName = getUnitNameFromAbbrev(ing.unit_abbreviation);
+        console.log(`Ingredient ${ing.ingredient_name}: abbrev=${ing.unit_abbreviation}, name=${unitName}, category=${ingredient?.category_name}`);
         return {
           ingredient_name: ing.ingredient_name,
           quantity: ing.quantity,
-          unit_name: ing.unit_abbreviation,
+          unit_name: unitName,
           category_name: ingredient?.category_name || ''
         };
       })
@@ -448,6 +466,8 @@ function AdminSetup() {
       const productData = {
         name: editingProduct.name,
         prep_time_hours: parseFloat(editingProduct.prep_time_hours),
+        threshold: editingProduct.threshold ? parseFloat(editingProduct.threshold) : null,
+        unit_name: editingProduct.unit_name || null,
         ingredients: editingProduct.ingredients.map(ing => ({
           ingredient_name: ing.ingredient_name,
           quantity: parseFloat(ing.quantity),
@@ -808,6 +828,31 @@ function AdminSetup() {
               </div>
 
               <div className="form-row">
+                <div className="form-field">
+                  <label>阈值(可选):</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={newProduct.threshold}
+                    onChange={(e) => setNewProduct({ ...newProduct, threshold: e.target.value })}
+                    placeholder="输入阈值"
+                  />
+                </div>
+                <div className="form-field">
+                  <label>阈值单位(可选):</label>
+                  <select
+                    value={newProduct.unit_name}
+                    onChange={(e) => setNewProduct({ ...newProduct, unit_name: e.target.value })}
+                  >
+                    <option value="">选择单位</option>
+                    {units.map(unit => (
+                      <option key={unit.id} value={unit.name}>{unit.name} ({unit.abbreviation})</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-row">
                 <label>Ingredients:</label>
               </div>
 
@@ -928,6 +973,31 @@ function AdminSetup() {
                     </div>
 
                     <div className="form-row">
+                      <div className="form-field">
+                        <label>阈值(可选):</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={editingProduct.threshold}
+                          onChange={(e) => setEditingProduct({ ...editingProduct, threshold: e.target.value })}
+                          placeholder="输入阈值"
+                        />
+                      </div>
+                      <div className="form-field">
+                        <label>阈值单位(可选):</label>
+                        <select
+                          value={editingProduct.unit_name}
+                          onChange={(e) => setEditingProduct({ ...editingProduct, unit_name: e.target.value })}
+                        >
+                          <option value="">选择单位</option>
+                          {units.map(unit => (
+                            <option key={unit.id} value={unit.name}>{unit.name} ({unit.abbreviation})</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="form-row">
                       <label>Ingredients:</label>
                     </div>
 
@@ -1023,6 +1093,12 @@ function AdminSetup() {
                     <strong>{prod.name}</strong>
                     <span className="prep-time">准备时间: {prod.prep_time_hours} 小时</span>
                   </div>
+                  {prod.threshold && (
+                    <div className="product-threshold">
+                      <label>阈值:</label>
+                      <span>{prod.threshold} {prod.unit_abbreviation}</span>
+                    </div>
+                  )}
                   {prod.ingredients && prod.ingredients.length > 0 && (
                     <div className="product-ingredients">
                       <label>原料:</label>

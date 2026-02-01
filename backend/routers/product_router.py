@@ -88,10 +88,21 @@ def create_prepped_item(
         # Get ingredient details for response
         ingredients = product_crud.get_semi_finished_product_ingredients(db, product.id)
 
+        # Get unit abbreviation
+        unit_abbreviation = None
+        if product.unit_id:
+            from backend.models.inventory import Unit
+            unit = db.query(Unit).filter(Unit.id == product.unit_id).first()
+            if unit:
+                unit_abbreviation = unit.abbreviation
+
         return SemiFinishedProductOut(
             id=product.id,
             name=product.name,
             prep_time_hours=product.prep_time_hours,
+            threshold=product.threshold,
+            unit_name=None,  # Not needed in output
+            unit_abbreviation=unit_abbreviation,
             ingredients=ingredients
         )
     except ValueError as e:
@@ -162,10 +173,21 @@ def get_prepped_item(
     # Get ingredient details
     ingredients = product_crud.get_semi_finished_product_ingredients(db, product.id)
 
+    # Get unit abbreviation
+    unit_abbreviation = None
+    if product.unit_id:
+        from backend.models.inventory import Unit
+        unit = db.query(Unit).filter(Unit.id == product.unit_id).first()
+        if unit:
+            unit_abbreviation = unit.abbreviation
+
     return SemiFinishedProductOut(
         id=product.id,
         name=product.name,
         prep_time_hours=product.prep_time_hours,
+        threshold=product.threshold,
+        unit_name=None,
+        unit_abbreviation=unit_abbreviation,
         ingredients=ingredients
     )
 
@@ -225,10 +247,21 @@ def update_prepped_item(
         # Get updated ingredient details
         ingredients = product_crud.get_semi_finished_product_ingredients(db, product.id)
 
+        # Get unit abbreviation
+        unit_abbreviation = None
+        if product.unit_id:
+            from backend.models.inventory import Unit
+            unit = db.query(Unit).filter(Unit.id == product.unit_id).first()
+            if unit:
+                unit_abbreviation = unit.abbreviation
+
         return SemiFinishedProductOut(
             id=product.id,
             name=product.name,
             prep_time_hours=product.prep_time_hours,
+            threshold=product.threshold,
+            unit_name=None,
+            unit_abbreviation=unit_abbreviation,
             ingredients=ingredients
         )
     except ValueError as e:

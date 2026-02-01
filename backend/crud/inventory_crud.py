@@ -95,6 +95,7 @@ def list_inventory(
 ) -> List[dict]:
     """
     List inventory with optional grouping and sorting
+    Includes both regular ingredients and semi-finished products
 
     Args:
         group_by: 'location' or 'restock_needed'
@@ -105,6 +106,9 @@ def list_inventory(
     Returns:
         List of inventory records with denormalized data
     """
+    from backend.models.inventory import SemiFinishedProduct, SemiProductInventory
+
+    # Query regular ingredients inventory
     query = db.query(
         Inventory.id,
         Inventory.ingredient_id,
@@ -130,21 +134,34 @@ def list_inventory(
         Inventory.unit_id == Unit.id
     )
 
-    # Apply sorting
-    if sort_by == "actual_qty":
-        query = query.order_by(Inventory.actual_qty.desc())
-    elif sort_by == "standard_qty":
-        query = query.order_by(Inventory.standard_qty.desc())
-    elif sort_by == "update_time":
-        query = query.order_by(Inventory.update_time.desc())
-    else:
-        # Default: sort by ingredient name
-        query = query.order_by(IngredientRaw.name)
+    # Query semi-finished products inventory
+    semi_query = db.query(
+        SemiProductInventory.id,
+        SemiProductInventory.semi_product_id,
+        SemiProductInventory.standard_qty,
+        SemiProductInventory.actual_qty,
+        SemiProductInventory.location,
+        SemiProductInventory.update_time,
+        SemiProductInventory.restock_needed,
+        SemiFinishedProduct.name.label("product_name"),
+        SemiFinishedProduct.threshold,
+        SemiFinishedProduct.unit_id.label("threshold_unit_id"),
+        Unit.abbreviation.label("unit_abbreviation")
+    ).join(
+        SemiFinishedProduct,
+        SemiProductInventory.semi_product_id == SemiFinishedProduct.id
+    ).join(
+        Unit,
+        SemiProductInventory.unit_id == Unit.id
+    )
 
-    # Apply pagination
-    inventory_records = query.offset(skip).limit(limit).all()
+    # Apply sorting (limit to 500 per type for now, handle pagination differently)
+    inventory_records = query.limit(500).all()
+    semi_records = semi_query.limit(500).all()
 
     result = []
+
+    # Process regular ingredients
     for inv in inventory_records:
         # Convert datetime to ISO string
         update_time_str = inv.update_time.isoformat() if inv.update_time else None
@@ -169,8 +186,48 @@ def list_inventory(
             "threshold_unit": threshold_unit,
             "location": inv.location,
             "update_time": update_time_str,
-            "restock_needed": bool(inv.restock_needed)
+            "restock_needed": bool(inv.restock_needed),
+            "item_type": "ingredient"
         })
+
+    # Process semi-finished products
+    for semi in semi_records:
+        update_time_str = semi.update_time.isoformat() if semi.update_time else None
+
+        # Get threshold unit abbreviation
+        threshold_unit = None
+        if semi.threshold_unit_id:
+            threshold_unit_obj = db.query(Unit).filter(Unit.id == semi.threshold_unit_id).first()
+            if threshold_unit_obj:
+                threshold_unit = threshold_unit_obj.abbreviation
+
+        result.append({
+            "inventory_id": semi.id,
+            "ingredient_id": semi.semi_product_id,
+            "ingredient_name": semi.product_name,
+            "category_name": "半成品",
+            "brand": None,
+            "standard_qty": semi.standard_qty,
+            "actual_qty": semi.actual_qty,
+            "unit_abbreviation": semi.unit_abbreviation,
+            "threshold": semi.threshold,
+            "threshold_unit": threshold_unit,
+            "location": semi.location,
+            "update_time": update_time_str,
+            "restock_needed": bool(semi.restock_needed),
+            "item_type": "semi_product"
+        })
+
+    # Apply sorting
+    if sort_by == "actual_qty":
+        result.sort(key=lambda x: float(x["actual_qty"] or 0), reverse=True)
+    elif sort_by == "standard_qty":
+        result.sort(key=lambda x: float(x["standard_qty"] or 0), reverse=True)
+    elif sort_by == "update_time":
+        result.sort(key=lambda x: x["update_time"] or "", reverse=True)
+    else:
+        # Default: sort by name
+        result.sort(key=lambda x: x["ingredient_name"])
 
     # Apply grouping if requested (for frontend convenience)
     if group_by == "location":
@@ -246,3 +303,82 @@ def delete_inventory(
     db.delete(inventory)
     db.commit()
     return True
+
+
+# ====== Semi-Product Inventory CRUD ======
+
+def create_semi_product_inventory(
+    db: Session,
+    semi_product_name: str,
+    unit_name: str,
+    standard_qty: Optional[float],
+    actual_qty: Optional[float],
+    location: str
+):
+    """
+    Create a new semi-product inventory record
+    """
+    from backend.models.inventory import SemiFinishedProduct, SemiProductInventory
+
+    # Validate semi-product exists
+    semi_product = db.query(SemiFinishedProduct).filter(
+        SemiFinishedProduct.name == semi_product_name
+    ).first()
+    if not semi_product:
+        raise ValueError(f"Semi-finished product '{semi_product_name}' does not exist")
+
+    # Validate unit exists
+    unit = db.query(Unit).filter(Unit.name == unit_name).first()
+    if not unit:
+        raise ValueError(f"Unit '{unit_name}' does not exist")
+
+    # Validate quantities
+    if standard_qty is not None and standard_qty < 0:
+        raise ValueError("Standard quantity cannot be negative")
+    if actual_qty is not None and actual_qty < 0:
+        raise ValueError("Actual quantity cannot be negative")
+
+    # Create inventory record
+    inventory = SemiProductInventory(
+        semi_product_id=semi_product.id,
+        unit_id=unit.id,
+        standard_qty=standard_qty if standard_qty is not None else 0,
+        actual_qty=actual_qty if actual_qty is not None else 0,
+        location=location,
+        update_time=datetime.now(),
+        restock_needed=0
+    )
+
+    db.add(inventory)
+    db.commit()
+    db.refresh(inventory)
+    return inventory
+
+
+def update_semi_product_inventory(
+    db: Session,
+    inventory_id: int,
+    actual_qty: float
+):
+    """
+    Update semi-product inventory actual quantity
+    """
+    from backend.models.inventory import SemiProductInventory
+
+    inventory = db.query(SemiProductInventory).filter(
+        SemiProductInventory.id == inventory_id
+    ).first()
+    if not inventory:
+        return None
+
+    # Validate quantity
+    if actual_qty < 0:
+        raise ValueError("Actual quantity cannot be negative")
+
+    # Update actual_qty
+    inventory.actual_qty = actual_qty
+    inventory.update_time = datetime.now()
+
+    db.commit()
+    db.refresh(inventory)
+    return inventory

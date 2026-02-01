@@ -158,6 +158,8 @@ class SemiFinishedProductIngredientOut(BaseModel):
 class SemiFinishedProductBase(BaseModel):
     name: str = Field(..., max_length=100)
     prep_time_hours: Decimal = Field(..., gt=0, description="Preparation time in hours")
+    threshold: Optional[Decimal] = Field(None, ge=0, description="Low stock threshold")
+    unit_name: Optional[str] = Field(None, max_length=50, description="Unit name for threshold")
 
 
 class SemiFinishedProductCreate(SemiFinishedProductBase):
@@ -167,11 +169,14 @@ class SemiFinishedProductCreate(SemiFinishedProductBase):
 class SemiFinishedProductUpdate(BaseModel):
     name: Optional[str] = Field(None, max_length=100)
     prep_time_hours: Optional[Decimal] = Field(None, gt=0)
+    threshold: Optional[Decimal] = Field(None, ge=0, description="Low stock threshold")
+    unit_name: Optional[str] = Field(None, max_length=50, description="Unit name for threshold")
     ingredients: Optional[List[SemiFinishedProductIngredientBase]] = Field(None, min_items=1)
 
 
 class SemiFinishedProductOut(SemiFinishedProductBase):
     id: int
+    unit_abbreviation: Optional[str] = Field(None, description="Unit abbreviation for threshold")
     ingredients: List[SemiFinishedProductIngredientOut] = Field(default_factory=list)
 
     class Config:
@@ -183,6 +188,8 @@ class SemiFinishedProductListOut(BaseModel):
     id: int
     name: str
     prep_time_hours: Decimal
+    threshold: Optional[Decimal] = Field(None, description="Low stock threshold")
+    unit_abbreviation: Optional[str] = Field(None, description="Unit abbreviation")
     ingredient_count: int = Field(..., description="Number of ingredients")
 
     class Config:
@@ -302,6 +309,7 @@ class InventoryOut(BaseModel):
     location: str
     update_time: str = Field(..., description="Last update time in ISO format")
     restock_needed: bool = Field(..., description="True if restock is needed based on threshold")
+    item_type: str = Field(..., description="Type: 'ingredient' or 'semi_product'")
 
     class Config:
         from_attributes = True

@@ -137,3 +137,30 @@ CREATE TABLE inventory (
         FOREIGN KEY (ingredient_id) REFERENCES ingredients(id),
     CONSTRAINT fk_inventory_unit
         FOREIGN KEY (unit_id) REFERENCES units(id)
+
+
+
+CREATE TABLE IF NOT EXISTS semi_product_inventory (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    semi_product_id BIGINT UNSIGNED NOT NULL,
+    unit_id BIGINT UNSIGNED NOT NULL,
+    standard_qty DECIMAL(10, 2) COMMENT 'Standard quantity to maintain',
+    actual_qty DECIMAL(10, 2) COMMENT 'Current actual quantity in stock',
+    location VARCHAR(100) NOT NULL COMMENT 'Storage location',
+    update_time DATETIME NOT NULL COMMENT 'Last update timestamp',
+    restock_needed INT NOT NULL DEFAULT 0 COMMENT '1 if restock needed, 0 otherwise',
+    FOREIGN KEY (semi_product_id) REFERENCES semi_finished_products(id),
+    FOREIGN KEY (unit_id) REFERENCES units(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- Check semi-products
+SELECT id, name FROM semi_finished_products;
+
+-- Check units
+SELECT id, abbreviation, unit_name FROM units;
+
+INSERT INTO semi_product_inventory
+  (semi_product_id, unit_id, standard_qty, actual_qty, location, update_time, restock_needed)
+VALUES
+  (6, 8, 100.00, 80.00, 'Prep Station', NOW(), false);
