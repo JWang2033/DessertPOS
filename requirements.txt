@@ -3,3 +3,7 @@ uvicorn[standard]
 pymysql
 sqlalchemy
 passlib[bcrypt]
+twilio
+redis
+python-dotenv
+python-jose[cryptography]

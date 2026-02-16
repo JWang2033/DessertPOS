@@ -174,6 +174,8 @@ pip install -r requirements.txt
 │   └── vite.config.js
 ├── init_inventory_db.py
 ├── main.py
+├── order_allergen_tables_redis_cart.sql
+├── order_cart_allergen_tables.sql
 ├── order_tables.sql
 ├── product_tables.sql
 ├── project_structure.txt
