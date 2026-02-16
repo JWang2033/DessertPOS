@@ -7,7 +7,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from backend.models.inventory import (
-    IngredientRaw, Category, Allergen, IngredientAllergen
+    IngredientRaw, Category, Allergen, IngredientAllergen, Unit, CategoryUnit
 )
 from backend.schemas.inventory_schemas import (
     IngredientCreate, IngredientUpdate
@@ -322,6 +322,27 @@ def update_ingredient_by_name(
 
     if payload.threshold is not None:
         ingredient.threshold = payload.threshold
+
+    # Update unit if provided (by name)
+    if payload.unit_name is not None:
+        unit = db.query(Unit).filter(
+            Unit.name == payload.unit_name
+        ).first()
+        if not unit:
+            raise ValueError(f"Unit with name '{payload.unit_name}' does not exist")
+
+        # Validate that the unit is allowed for the ingredient's category
+        category_unit = db.query(CategoryUnit).filter(
+            CategoryUnit.category_id == ingredient.category_id,
+            CategoryUnit.unit_id == unit.id
+        ).first()
+        if not category_unit:
+            category = db.query(Category).filter(Category.id == ingredient.category_id).first()
+            raise ValueError(
+                f"Unit '{unit.name}' is not allowed for category '{category.name if category else 'Unknown'}'"
+            )
+
+        ingredient.unit_id = unit.id
 
     # Update allergen associations if provided
     if payload.allergen_ids is not None:

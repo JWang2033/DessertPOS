@@ -2,16 +2,20 @@ import { useState, useEffect } from 'react';
 import {
   getInventory,
   createInventory,
+  createSemiProductInventory,
   updateInventory,
   getIngredients,
   getUnits,
   getCategories,
+  getProducts,
+  checkInventoryUnitCompatibility,
 } from '../services/api';
 import './Inventory.css';
 
 function Inventory() {
   const [inventory, setInventory] = useState([]);
   const [ingredients, setIngredients] = useState([]);
+  const [semiProducts, setSemiProducts] = useState([]);
   const [units, setUnits] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -25,6 +29,7 @@ function Inventory() {
   // 创建库存表单
   const [newInventory, setNewInventory] = useState({
     ingredient_name: '',
+    semi_product_name: '',
     unit_name: '',
     standard_qty: '',
     actual_qty: '',
@@ -39,9 +44,24 @@ function Inventory() {
   useEffect(() => {
     loadInventory();
     loadIngredients();
+    loadSemiProducts();
     loadUnits();
     loadCategories();
   }, [groupBy, sortBy, inventoryType]);
+
+  useEffect(() => {
+    // Reset form when switching inventory type
+    setShowCreateForm(false);
+    setNewInventory({
+      ingredient_name: '',
+      semi_product_name: '',
+      unit_name: '',
+      standard_qty: '',
+      actual_qty: '',
+      location: '',
+      store_id: 1,
+    });
+  }, [inventoryType]);
 
   const loadInventory = async () => {
     try {
@@ -67,6 +87,15 @@ function Inventory() {
       setIngredients(response.data);
     } catch (error) {
       console.error('加载原料失败:', error);
+    }
+  };
+
+  const loadSemiProducts = async () => {
+    try {
+      const response = await getProducts();
+      setSemiProducts(response.data);
+    } catch (error) {
+      console.error('加载半成品失败:', error);
     }
   };
 
@@ -100,27 +129,56 @@ function Inventory() {
   const handleCreateInventory = async (e) => {
     e.preventDefault();
 
-    if (!newInventory.ingredient_name || !newInventory.unit_name ||
+    // Validate based on inventory type
+    const itemNameField = inventoryType === 'ingredient' ? 'ingredient_name' : 'semi_product_name';
+    const itemName = inventoryType === 'ingredient'
+      ? newInventory.ingredient_name
+      : newInventory.semi_product_name;
+
+    if (!itemName || !newInventory.unit_name ||
         !newInventory.standard_qty || !newInventory.actual_qty) {
       alert('请填写完整的库存信息');
       return;
     }
 
     try {
+      // Check unit compatibility before creating inventory
+      const compatibilityCheck = await checkInventoryUnitCompatibility(
+        inventoryType,
+        itemName,
+        newInventory.unit_name
+      );
+
+      if (!compatibilityCheck.data.compatible) {
+        const itemType = inventoryType === 'ingredient' ? '原料' : '半成品';
+        alert(
+          `单位不兼容：${itemType}"${itemName}"的阈值单位是 ${compatibilityCheck.data.item_unit}，` +
+          `无法与所选单位 ${compatibilityCheck.data.inventory_unit} 进行转换。\n\n` +
+          `请选择同类型的单位（重量单位或体积单位）。`
+        );
+        return;
+      }
+
       const data = {
-        ingredient_name: newInventory.ingredient_name,
+        [itemNameField]: itemName,
         unit_name: newInventory.unit_name,
         standard_qty: parseFloat(newInventory.standard_qty),
         actual_qty: parseFloat(newInventory.actual_qty),
         location: newInventory.location || null,
-        store_id: newInventory.store_id,
       };
 
-      await createInventory(data);
+      // Call appropriate API based on inventory type
+      if (inventoryType === 'ingredient') {
+        await createInventory(data);
+      } else {
+        await createSemiProductInventory(data);
+      }
+
       alert('库存创建成功');
       setShowCreateForm(false);
       setNewInventory({
         ingredient_name: '',
+        semi_product_name: '',
         unit_name: '',
         standard_qty: '',
         actual_qty: '',
@@ -375,9 +433,6 @@ function Inventory() {
     <div className="inventory">
       <div className="header">
         <h1>库存管理</h1>
-        <button className="create-btn" onClick={() => setShowCreateForm(!showCreateForm)}>
-          {showCreateForm ? '取消创建' : '+ 新建库存'}
-        </button>
       </div>
 
       {/* Tab switching for inventory type */}
@@ -393,6 +448,13 @@ function Inventory() {
           onClick={() => setInventoryType('semi_product')}
         >
           半成品库存
+        </button>
+      </div>
+
+      {/* Create button inside tab */}
+      <div style={{ padding: '20px 0' }}>
+        <button className="create-btn" onClick={() => setShowCreateForm(!showCreateForm)}>
+          {showCreateForm ? '取消创建' : `+ 新建${inventoryType === 'ingredient' ? '原料' : '半成品'}库存`}
         </button>
       </div>
 
@@ -425,20 +487,32 @@ function Inventory() {
       {/* 创建库存表单 */}
       {showCreateForm && (
         <div className="create-form-container">
-          <h2>新建库存记录</h2>
+          <h2>新建{inventoryType === 'ingredient' ? '原料' : '半成品'}库存记录</h2>
           <form onSubmit={handleCreateInventory}>
             <div className="form-row">
               <div className="form-group">
-                <label>原料 *</label>
+                <label>{inventoryType === 'ingredient' ? '原料' : '半成品'} *</label>
                 <select
-                  value={newInventory.ingredient_name}
-                  onChange={(e) => setNewInventory({ ...newInventory, ingredient_name: e.target.value, unit_name: '' })}
+                  value={inventoryType === 'ingredient' ? newInventory.ingredient_name : newInventory.semi_product_name}
+                  onChange={(e) => {
+                    if (inventoryType === 'ingredient') {
+                      setNewInventory({ ...newInventory, ingredient_name: e.target.value, unit_name: '' });
+                    } else {
+                      setNewInventory({ ...newInventory, semi_product_name: e.target.value, unit_name: '' });
+                    }
+                  }}
                   required
                 >
-                  <option value="">选择原料</option>
-                  {ingredients.map(ing => (
-                    <option key={ing.id} value={ing.name}>{ing.name}</option>
-                  ))}
+                  <option value="">选择{inventoryType === 'ingredient' ? '原料' : '半成品'}</option>
+                  {inventoryType === 'ingredient' ? (
+                    ingredients.map(ing => (
+                      <option key={ing.id} value={ing.name}>{ing.name}</option>
+                    ))
+                  ) : (
+                    semiProducts.map(prod => (
+                      <option key={prod.id} value={prod.name}>{prod.name}</option>
+                    ))
+                  )}
                 </select>
               </div>
 
@@ -448,12 +522,18 @@ function Inventory() {
                   value={newInventory.unit_name}
                   onChange={(e) => setNewInventory({ ...newInventory, unit_name: e.target.value })}
                   required
-                  disabled={!newInventory.ingredient_name}
+                  disabled={inventoryType === 'ingredient' ? !newInventory.ingredient_name : !newInventory.semi_product_name}
                 >
                   <option value="">选择单位</option>
-                  {getUnitsForIngredient(newInventory.ingredient_name).map(unit => (
-                    <option key={unit.id} value={unit.name}>{unit.name}</option>
-                  ))}
+                  {inventoryType === 'ingredient' ? (
+                    getUnitsForIngredient(newInventory.ingredient_name).map(unit => (
+                      <option key={unit.id} value={unit.name}>{unit.name}</option>
+                    ))
+                  ) : (
+                    units.map(unit => (
+                      <option key={unit.id} value={unit.name}>{unit.name}</option>
+                    ))
+                  )}
                 </select>
               </div>
 

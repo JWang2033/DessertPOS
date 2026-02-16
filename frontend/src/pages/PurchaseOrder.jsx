@@ -6,6 +6,7 @@ import {
   getIngredients,
   getUnits,
   getCategories,
+  checkUnitCompatibility,
 } from '../services/api';
 import './PurchaseOrder.css';
 
@@ -115,6 +116,26 @@ function PurchaseOrder() {
         alert('请填写完整的采购项信息');
         return;
       }
+    }
+
+    // Check unit compatibility for all items
+    const warnings = [];
+    for (let item of orderForm.items) {
+      try {
+        const response = await checkUnitCompatibility(item.ingredient_name, item.unit_name);
+        if (!response.data.compatible) {
+          warnings.push(`${item.ingredient_name}选择的单位无法转换 (${response.data.purchase_unit} → ${response.data.ingredient_unit})`);
+        }
+      } catch (error) {
+        console.error('Unit compatibility check failed:', error);
+      }
+    }
+
+    // Show warnings if any
+    if (warnings.length > 0) {
+      const message = '错误：以下采购项的单位无法转换到库存单位：\n\n' + warnings.join('\n') + '\n\n无法创建采购单，请修改单位后重试。';
+      alert(message);
+      return;
     }
 
     try {

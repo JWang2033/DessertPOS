@@ -313,3 +313,23 @@ class InventoryOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# ====== Semi-Product Inventory Schemas ======
+class SemiProductInventoryBase(BaseModel):
+    """Base schema for semi-product inventory"""
+    semi_product_name: str = Field(..., description="Name of the semi-finished product")
+    unit_name: str = Field(..., description="Name of the unit")
+    standard_qty: Optional[Decimal] = Field(None, ge=0, description="Standard quantity to maintain")
+    actual_qty: Optional[Decimal] = Field(None, ge=0, description="Current actual quantity")
+    location: str = Field(..., max_length=100, description="Storage location")
+
+
+class SemiProductInventoryCreate(SemiProductInventoryBase):
+    """Schema for creating semi-product inventory record"""
+    pass
+
+
+class SemiProductInventoryUpdate(BaseModel):
+    """Schema for updating semi-product inventory (only actual_qty)"""
+    actual_qty: Decimal = Field(..., ge=0, description="New actual quantity")

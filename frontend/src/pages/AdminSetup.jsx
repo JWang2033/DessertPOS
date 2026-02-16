@@ -655,7 +655,7 @@ function AdminSetup() {
                   <label>分类 *</label>
                   <select
                     value={newIngredient.category_name}
-                    onChange={(e) => setNewIngredient({ ...newIngredient, category_name: e.target.value })}
+                    onChange={(e) => setNewIngredient({ ...newIngredient, category_name: e.target.value, unit_name: '' })}
                   >
                     <option value="">选择分类</option>
                     {categories.map(cat => (
@@ -687,11 +687,14 @@ function AdminSetup() {
                   <select
                     value={newIngredient.unit_name}
                     onChange={(e) => setNewIngredient({ ...newIngredient, unit_name: e.target.value })}
+                    disabled={!newIngredient.category_name}
                   >
                     <option value="">选择单位</option>
-                    {units.map(unit => (
-                      <option key={unit.id} value={unit.name}>{unit.name} ({unit.abbreviation})</option>
-                    ))}
+                    {newIngredient.category_name &&
+                      getUnitsForCategory(newIngredient.category_name).map(unit => (
+                        <option key={unit.id} value={unit.name}>{unit.name} ({unit.abbreviation})</option>
+                      ))
+                    }
                   </select>
                 </div>
               </div>
@@ -716,7 +719,7 @@ function AdminSetup() {
                         <label>分类 *</label>
                         <select
                           value={editingIngredient.category_name}
-                          onChange={(e) => setEditingIngredient({ ...editingIngredient, category_name: e.target.value })}
+                          onChange={(e) => setEditingIngredient({ ...editingIngredient, category_name: e.target.value, unit_name: '' })}
                         >
                           <option value="">选择分类</option>
                           {categories.map(cat => (
@@ -746,11 +749,14 @@ function AdminSetup() {
                         <select
                           value={editingIngredient.unit_name}
                           onChange={(e) => setEditingIngredient({ ...editingIngredient, unit_name: e.target.value })}
+                          disabled={!editingIngredient.category_name}
                         >
                           <option value="">选择单位</option>
-                          {units.map(unit => (
-                            <option key={unit.id} value={unit.name}>{unit.name} ({unit.abbreviation})</option>
-                          ))}
+                          {editingIngredient.category_name &&
+                            getUnitsForCategory(editingIngredient.category_name).map(unit => (
+                              <option key={unit.id} value={unit.name}>{unit.name} ({unit.abbreviation})</option>
+                            ))
+                          }
                         </select>
                       </div>
                     </div>

@@ -65,11 +65,16 @@ export const createPurchaseOrder = (data) => api.post('/receiving', data);
 export const getPurchaseOrderById = (id) => api.get(`/receiving/${id}`);
 export const updatePurchaseOrder = (id, data) => api.put(`/receiving/${id}`, data);
 export const deletePurchaseOrder = (id) => api.delete(`/receiving/${id}`);
+export const checkUnitCompatibility = (ingredientName, unitName) =>
+  api.get(`/receiving/check-unit-compatibility/${ingredientName}/${unitName}`);
 
 // ========== 库存管理 API ==========
 export const getInventory = (params) => api.get('/inventory', { params });
 export const createInventory = (data) => api.post('/inventory', data);
+export const createSemiProductInventory = (data) => api.post('/inventory/semi-product', data);
 export const updateInventory = (id, data) => api.put(`/inventory/${id}`, data);
 export const deleteInventory = (id) => api.delete(`/inventory/${id}`);
+export const checkInventoryUnitCompatibility = (itemType, itemName, unitName) =>
+  api.get(`/inventory/check-unit-compatibility/${itemType}/${itemName}/${unitName}`);
 
 export default api;

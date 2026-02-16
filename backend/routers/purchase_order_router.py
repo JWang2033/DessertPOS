@@ -11,6 +11,8 @@ from backend.schemas.inventory_schemas import (
     PurchaseOrderCreate, PurchaseOrderOut, PurchaseOrderListOut
 )
 from backend.crud import purchase_order_crud
+from backend.models.inventory import IngredientRaw, Unit
+from backend.utils.unit_converter import can_convert_units
 
 
 router = APIRouter(prefix="/receiving", tags=["Purchase Orders / Receiving"])
@@ -324,3 +326,58 @@ def get_receiving_order_detail(
         total_amount=po.total_amount,
         items=items
     )
+
+
+@router.get("/check-unit-compatibility/{ingredient_name}/{unit_name}", response_model=dict)
+def check_unit_compatibility(
+    ingredient_name: str,
+    unit_name: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Check if a purchase order unit can be converted to ingredient's threshold unit
+
+    Returns:
+    - compatible: bool - whether units can be converted
+    - ingredient_unit: str - the ingredient's threshold unit abbreviation
+    - purchase_unit: str - the purchase order unit abbreviation
+    """
+    # Get ingredient
+    ingredient = db.query(IngredientRaw).filter(
+        IngredientRaw.name == ingredient_name
+    ).first()
+    if not ingredient:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Ingredient '{ingredient_name}' not found"
+        )
+
+    # Get ingredient's threshold unit
+    threshold_unit = db.query(Unit).filter(
+        Unit.id == ingredient.unit_id
+    ).first()
+    if not threshold_unit:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Threshold unit not found for ingredient '{ingredient_name}'"
+        )
+
+    # Get purchase order unit
+    purchase_unit = db.query(Unit).filter(
+        Unit.name == unit_name
+    ).first()
+    if not purchase_unit:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Unit '{unit_name}' not found"
+        )
+
+    # Check compatibility
+    compatible = can_convert_units(purchase_unit.abbreviation, threshold_unit.abbreviation)
+
+    return {
+        "compatible": compatible,
+        "ingredient_unit": threshold_unit.abbreviation,
+        "purchase_unit": purchase_unit.abbreviation,
+        "ingredient_name": ingredient_name
+    }

@@ -86,6 +86,24 @@ def convert_quantity(
     return converted_quantity
 
 
+def can_convert_units(from_unit_abbr: str, to_unit_abbr: str) -> bool:
+    """
+    Check if two units can be converted to each other
+
+    Args:
+        from_unit_abbr: Source unit abbreviation
+        to_unit_abbr: Target unit abbreviation
+
+    Returns:
+        True if conversion is possible, False otherwise
+    """
+    from_type = get_unit_type(from_unit_abbr)
+    to_type = get_unit_type(to_unit_abbr)
+
+    # Can convert if both are the same type (weight or volume)
+    return from_type is not None and from_type == to_type
+
+
 def find_or_create_inventory_with_conversion(
     db: Session,
     ingredient_id: int,
