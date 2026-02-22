@@ -54,19 +54,11 @@ pip install -r requirements.txt
 │   │   └── user.py
 │   ├── routers
 │   │   ├── __init__.py
-│   │   ├── admin_catalog_router.py
 │   │   ├── admin_setup_router.py
-│   │   ├── auth.py
-│   │   ├── catalog_router.py
 │   │   ├── ingredient_router.py
 │   │   ├── inventory_router.py
 │   │   ├── product_router.py
-│   │   ├── protected.py
-│   │   ├── purchase_order_router.py
-│   │   ├── rbac_router.py
-│   │   ├── staff_router.py
-│   │   ├── test.py
-│   │   └── user_router.py
+│   │   └── purchase_order_router.py
 │   ├── schemas
 │   │   ├── __init__.py
 │   │   ├── catalog_schemas.py
@@ -77,44 +69,61 @@ pip install -r requirements.txt
 │       ├── auth_dependencies.py
 │       ├── security.py
 │       └── unit_converter.py
+├── backend.log
 ├── check_and_fix_db.py
 ├── create_inventory.sql
 ├── create_semi_product_inventory.sql
-├── frontend
+├── frontend_sys
 │   ├── README.md
+│   ├── Ramen_Shop_Inventory_Management_PRD_FE.md
+│   ├── eslint.config.js
 │   ├── index.html
 │   ├── node_modules
-│   │   ├── @alloc
+│   │   ├── @ant-design
 │   │   ├── @babel
-│   │   ├── @emnapi
+│   │   ├── @emotion
 │   │   ├── @esbuild
 │   │   ├── @eslint
 │   │   ├── @eslint-community
 │   │   ├── @humanfs
 │   │   ├── @humanwhocodes
 │   │   ├── @jridgewell
-│   │   ├── @napi-rs
-│   │   ├── @nodelib
-│   │   ├── @oxc-project
-│   │   ├── @remix-run
+│   │   ├── @rc-component
 │   │   ├── @rolldown
 │   │   ├── @rollup
-│   │   ├── @tailwindcss
-│   │   ├── @tybys
 │   │   ├── @types
+│   │   ├── @typescript-eslint
 │   │   ├── @vitejs
+│   │   ├── acorn
+│   │   ├── acorn-jsx
+│   │   ├── ajv
+│   │   ├── ansi-styles
+│   │   ├── antd
+│   │   ├── argparse
 │   │   ├── asynckit
 │   │   ├── axios
+│   │   ├── balanced-match
 │   │   ├── baseline-browser-mapping
+│   │   ├── brace-expansion
 │   │   ├── browserslist
 │   │   ├── call-bind-apply-helpers
+│   │   ├── callsites
 │   │   ├── caniuse-lite
+│   │   ├── chalk
+│   │   ├── clsx
+│   │   ├── color-convert
+│   │   ├── color-name
 │   │   ├── combined-stream
+│   │   ├── compute-scroll-into-view
+│   │   ├── concat-map
 │   │   ├── convert-source-map
+│   │   ├── cookie
+│   │   ├── cross-spawn
 │   │   ├── csstype
+│   │   ├── dayjs
 │   │   ├── debug
+│   │   ├── deep-is
 │   │   ├── delayed-stream
-│   │   ├── detect-libc
 │   │   ├── dunder-proto
 │   │   ├── electron-to-chromium
 │   │   ├── es-define-property
@@ -123,6 +132,25 @@ pip install -r requirements.txt
 │   │   ├── es-set-tostringtag
 │   │   ├── esbuild
 │   │   ├── escalade
+│   │   ├── escape-string-regexp
+│   │   ├── eslint
+│   │   ├── eslint-plugin-react-hooks
+│   │   ├── eslint-plugin-react-refresh
+│   │   ├── eslint-scope
+│   │   ├── eslint-visitor-keys
+│   │   ├── espree
+│   │   ├── esquery
+│   │   ├── esrecurse
+│   │   ├── estraverse
+│   │   ├── esutils
+│   │   ├── fast-deep-equal
+│   │   ├── fast-json-stable-stringify
+│   │   ├── fast-levenshtein
+│   │   ├── fdir
+│   │   ├── file-entry-cache
+│   │   ├── find-up
+│   │   ├── flat-cache
+│   │   ├── flatted
 │   │   ├── follow-redirects
 │   │   ├── form-data
 │   │   ├── fsevents
@@ -130,52 +158,113 @@ pip install -r requirements.txt
 │   │   ├── gensync
 │   │   ├── get-intrinsic
 │   │   ├── get-proto
+│   │   ├── glob-parent
+│   │   ├── globals
+│   │   ├── globrex
 │   │   ├── gopd
+│   │   ├── has-flag
 │   │   ├── has-symbols
 │   │   ├── has-tostringtag
 │   │   ├── hasown
+│   │   ├── hermes-estree
+│   │   ├── hermes-parser
+│   │   ├── ignore
+│   │   ├── import-fresh
+│   │   ├── imurmurhash
+│   │   ├── is-extglob
+│   │   ├── is-glob
+│   │   ├── is-mobile
+│   │   ├── isexe
 │   │   ├── js-tokens
+│   │   ├── js-yaml
 │   │   ├── jsesc
+│   │   ├── json-buffer
+│   │   ├── json-schema-traverse
+│   │   ├── json-stable-stringify-without-jsonify
+│   │   ├── json2mq
 │   │   ├── json5
-│   │   ├── lightningcss
-│   │   ├── lightningcss-darwin-arm64
-│   │   ├── loose-envify
+│   │   ├── keyv
+│   │   ├── levn
+│   │   ├── locate-path
+│   │   ├── lodash.merge
 │   │   ├── lru-cache
+│   │   ├── lucide-react
 │   │   ├── math-intrinsics
 │   │   ├── mime-db
 │   │   ├── mime-types
+│   │   ├── minimatch
 │   │   ├── ms
 │   │   ├── nanoid
+│   │   ├── natural-compare
 │   │   ├── node-releases
+│   │   ├── optionator
+│   │   ├── p-limit
+│   │   ├── p-locate
+│   │   ├── parent-module
+│   │   ├── path-exists
+│   │   ├── path-key
 │   │   ├── picocolors
+│   │   ├── picomatch
 │   │   ├── postcss
+│   │   ├── prelude-ls
 │   │   ├── proxy-from-env
+│   │   ├── punycode
 │   │   ├── react
 │   │   ├── react-dom
+│   │   ├── react-is
 │   │   ├── react-refresh
 │   │   ├── react-router
 │   │   ├── react-router-dom
+│   │   ├── resolve-from
 │   │   ├── rollup
 │   │   ├── scheduler
+│   │   ├── scroll-into-view-if-needed
 │   │   ├── semver
+│   │   ├── set-cookie-parser
+│   │   ├── shebang-command
+│   │   ├── shebang-regex
 │   │   ├── source-map-js
+│   │   ├── string-convert
+│   │   ├── strip-json-comments
+│   │   ├── stylis
+│   │   ├── supports-color
+│   │   ├── throttle-debounce
+│   │   ├── tinyglobby
+│   │   ├── ts-api-utils
+│   │   ├── tsconfck
+│   │   ├── type-check
+│   │   ├── typescript
+│   │   ├── typescript-eslint
+│   │   ├── undici-types
 │   │   ├── update-browserslist-db
+│   │   ├── uri-js
 │   │   ├── vite
-│   │   └── yallist
+│   │   ├── vite-tsconfig-paths
+│   │   ├── which
+│   │   ├── word-wrap
+│   │   ├── yallist
+│   │   ├── yocto-queue
+│   │   ├── zod
+│   │   └── zod-validation-error
 │   ├── package-lock.json
 │   ├── package.json
+│   ├── public
+│   │   └── vite.svg
 │   ├── src
-│   │   ├── App.css
-│   │   ├── App.jsx
-│   │   ├── index.css
-│   │   ├── main.jsx
+│   │   ├── App.tsx
+│   │   ├── assets
+│   │   ├── components
+│   │   ├── main.tsx
 │   │   ├── pages
-│   │   └── services
-│   └── vite.config.js
+│   │   ├── services
+│   │   ├── types.ts
+│   │   └── utils
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
 ├── init_inventory_db.py
 ├── main.py
-├── order_allergen_tables_redis_cart.sql
-├── order_cart_allergen_tables.sql
 ├── order_tables.sql
 ├── product_tables.sql
 ├── project_structure.txt
@@ -189,7 +278,7 @@ pip install -r requirements.txt
 ├── test_purchase_orders.sh
 └── update_db_structure.py
 
-90 directories, 74 files
+183 directories, 72 files
 ```
 <!-- tree:end -->
 

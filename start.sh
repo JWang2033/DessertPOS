@@ -36,7 +36,7 @@ sleep 3
 # 启动前端
 echo ""
 echo "🎨 启动前端开发服务器..."
-cd frontend
+cd frontend_sys
 
 if [ ! -d "node_modules" ]; then
     echo "⚠️  未找到 node_modules，正在安装依赖..."
