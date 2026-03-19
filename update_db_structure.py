@@ -7,7 +7,7 @@ DB_CONFIG = {
     "port": 3307,
     "user": "root",
     "password": "WYz@Dessert2025",
-    "database": "dessert_pos",
+    "database": "dessert_pos_dev",
 }
 
 README = "README.md"
