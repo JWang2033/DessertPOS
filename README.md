@@ -291,177 +291,177 @@ pip install -r requirements.txt
 
 ### `allergens` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(100) |  | ❌ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| name | varchar(100) |  | ❌ |  |  |  |
 
 ---
 
 ### `categories` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(50) |  | ❌ |  |  |
-| tag | varchar(100) |  | ✅ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| name | varchar(50) |  | ❌ |  |  |  |
+| tag | varchar(100) |  | ✅ |  |  |  |
 
 ---
 
 ### `category_units` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| category_id | bigint unsigned | ✅ | ❌ |  |  |
-| unit_id | bigint unsigned | ✅ | ❌ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| category_id | bigint unsigned | ✅ | ❌ |  |  | categories.id |
+| unit_id | bigint unsigned | ✅ | ❌ |  |  | units.id |
 
 ---
 
 ### `ingredient_allergens` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| ingredient_id | bigint unsigned | ✅ | ❌ |  |  |
-| allergen_id | bigint unsigned | ✅ | ❌ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| ingredient_id | bigint unsigned | ✅ | ❌ |  |  | ingredients.id |
+| allergen_id | bigint unsigned | ✅ | ❌ |  |  | allergens.id |
 
 ---
 
 ### `ingredient_store_config` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| store_id | bigint unsigned |  | ❌ |  |  |
-| ingredient_id | bigint unsigned |  | ❌ |  |  |
-| threshold | decimal(10,2) |  | ✅ |  | Low-stock threshold / reorder point |
-| is_active | tinyint(1) |  | ❌ | 1 | Whether this ingredient is used in this store |
-| preferred_unit_id | bigint unsigned |  | ✅ |  | Preferred unit for this store |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| store_id | bigint unsigned |  | ❌ |  |  | stores.id |
+| ingredient_id | bigint unsigned |  | ❌ |  |  | ingredients.id |
+| threshold | decimal(10,2) |  | ✅ |  | Low-stock threshold / reorder point |  |
+| is_active | tinyint(1) |  | ❌ | 1 | Whether this ingredient is used in this store |  |
+| preferred_unit_id | bigint unsigned |  | ✅ |  | Preferred unit for this store | units.id |
 
 ---
 
 ### `ingredients` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(100) |  | ❌ |  |  |
-| category_id | bigint unsigned |  | ❌ |  |  |
-| unit_id | bigint unsigned |  | ✅ |  |  |
-| brand | varchar(100) |  | ✅ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| name | varchar(100) |  | ❌ |  |  |  |
+| category_id | bigint unsigned |  | ❌ |  |  | categories.id |
+| unit_id | bigint unsigned |  | ✅ |  |  | units.id |
+| brand | varchar(100) |  | ✅ |  |  |  |
 
 ---
 
 ### `inventory` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| ingredient_id | bigint unsigned |  | ❌ |  |  |
-| unit_id | bigint unsigned |  | ❌ |  |  |
-| standard_qty | decimal(10,2) |  | ✅ |  |  |
-| actual_qty | decimal(10,2) |  | ✅ |  |  |
-| location | varchar(100) |  | ❌ |  |  |
-| update_time | datetime |  | ❌ |  |  |
-| restock_needed | tinyint(1) |  | ❌ | 0 |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| ingredient_id | bigint unsigned |  | ❌ |  |  | ingredients.id |
+| unit_id | bigint unsigned |  | ❌ |  |  | units.id |
+| standard_qty | decimal(10,2) |  | ✅ |  |  |  |
+| actual_qty | decimal(10,2) |  | ✅ |  |  |  |
+| location | varchar(100) |  | ❌ |  |  |  |
+| update_time | datetime |  | ❌ |  |  |  |
+| restock_needed | tinyint(1) |  | ❌ | 0 |  |  |
 
 ---
 
 ### `purchase_order_items` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| purchase_order_id | bigint unsigned |  | ❌ |  |  |
-| ingredient_id | bigint unsigned |  | ❌ |  |  |
-| unit_id | bigint unsigned |  | ❌ |  |  |
-| quantity | decimal(10,2) |  | ❌ |  |  |
-| vendor | varchar(100) |  | ✅ |  | Vendor for this specific ingredient |
-| total_amount | decimal(10,2) |  | ✅ | 0.00 | Total amount for this purchase item in dollars |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| purchase_order_id | bigint unsigned |  | ❌ |  |  | purchase_orders.id |
+| ingredient_id | bigint unsigned |  | ❌ |  |  | ingredients.id |
+| unit_id | bigint unsigned |  | ❌ |  |  | units.id |
+| quantity | decimal(10,2) |  | ❌ |  |  |  |
+| vendor | varchar(100) |  | ✅ |  | Vendor for this specific ingredient |  |
+| total_amount | decimal(10,2) |  | ✅ | 0.00 | Total amount for this purchase item in dollars |  |
 
 ---
 
 ### `purchase_orders` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| po_code | varchar(50) |  | ❌ |  |  |
-| order_date | date |  | ❌ |  |  |
-| store_id | varchar(10) |  | ❌ |  |  |
-| total_amount | decimal(10,2) |  | ✅ | 0.00 | Total amount for the entire purchase order in dollars |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| po_code | varchar(50) |  | ❌ |  |  |  |
+| order_date | date |  | ❌ |  |  |  |
+| store_id | varchar(10) |  | ❌ |  |  |  |
+| total_amount | decimal(10,2) |  | ✅ | 0.00 | Total amount for the entire purchase order in dollars |  |
 
 ---
 
 ### `semi_finished_product_ingredients` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| semi_finished_product_id | bigint unsigned | ✅ | ❌ |  |  |
-| ingredient_id | bigint unsigned | ✅ | ❌ |  |  |
-| unit_id | bigint unsigned |  | ❌ |  |  |
-| quantity | decimal(10,2) |  | ❌ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| semi_finished_product_id | bigint unsigned | ✅ | ❌ |  |  | semi_finished_products.id |
+| ingredient_id | bigint unsigned | ✅ | ❌ |  |  | ingredients.id |
+| unit_id | bigint unsigned |  | ❌ |  |  | units.id |
+| quantity | decimal(10,2) |  | ❌ |  |  |  |
 
 ---
 
 ### `semi_finished_products` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(100) |  | ❌ |  |  |
-| prep_time_hours | decimal(5,2) |  | ❌ |  |  |
-| unit_id | bigint unsigned |  | ✅ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| name | varchar(100) |  | ❌ |  |  |  |
+| prep_time_hours | decimal(5,2) |  | ❌ |  |  |  |
+| unit_id | bigint unsigned |  | ✅ |  |  | units.id |
 
 ---
 
 ### `semi_product_inventory` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| semi_product_id | bigint unsigned |  | ❌ |  |  |
-| unit_id | bigint unsigned |  | ❌ |  |  |
-| standard_qty | decimal(10,2) |  | ✅ |  | Standard quantity to maintain |
-| actual_qty | decimal(10,2) |  | ✅ |  | Current actual quantity in stock |
-| location | varchar(100) |  | ❌ |  | Storage location |
-| update_time | datetime |  | ❌ |  | Last update timestamp |
-| restock_needed | int |  | ❌ | 0 | 1 if restock needed, 0 otherwise |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| semi_product_id | bigint unsigned |  | ❌ |  |  | semi_finished_products.id |
+| unit_id | bigint unsigned |  | ❌ |  |  | units.id |
+| standard_qty | decimal(10,2) |  | ✅ |  | Standard quantity to maintain |  |
+| actual_qty | decimal(10,2) |  | ✅ |  | Current actual quantity in stock |  |
+| location | varchar(100) |  | ❌ |  | Storage location |  |
+| update_time | datetime |  | ❌ |  | Last update timestamp |  |
+| restock_needed | int |  | ❌ | 0 | 1 if restock needed, 0 otherwise |  |
 
 ---
 
 ### `semi_product_store_config` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| store_id | bigint unsigned |  | ❌ |  |  |
-| semi_product_id | bigint unsigned |  | ❌ |  |  |
-| threshold | decimal(10,2) |  | ✅ |  | Low-stock threshold / reorder point |
-| is_active | tinyint(1) |  | ❌ | 1 | Whether this semi-finished product is used in this store |
-| preferred_unit_id | bigint unsigned |  | ✅ |  | Preferred unit for this store |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| store_id | bigint unsigned |  | ❌ |  |  | stores.id |
+| semi_product_id | bigint unsigned |  | ❌ |  |  | semi_finished_products.id |
+| threshold | decimal(10,2) |  | ✅ |  | Low-stock threshold / reorder point |  |
+| is_active | tinyint(1) |  | ❌ | 1 | Whether this semi-finished product is used in this store |  |
+| preferred_unit_id | bigint unsigned |  | ✅ |  | Preferred unit for this store | units.id |
 
 ---
 
 ### `stores` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| store_code | varchar(20) |  | ❌ |  |  |
-| name | varchar(100) |  | ❌ |  |  |
-| address | varchar(255) |  | ✅ |  |  |
-| phone | varchar(30) |  | ✅ |  |  |
-| is_active | tinyint(1) |  | ❌ | 1 |  |
-| created_at | datetime |  | ❌ | CURRENT_TIMESTAMP |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| store_code | varchar(20) |  | ❌ |  |  |  |
+| name | varchar(100) |  | ❌ |  |  |  |
+| address | varchar(255) |  | ✅ |  |  |  |
+| phone | varchar(30) |  | ✅ |  |  |  |
+| is_active | tinyint(1) |  | ❌ | 1 |  |  |
+| created_at | datetime |  | ❌ | CURRENT_TIMESTAMP |  |  |
 
 ---
 
 ### `units` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(50) |  | ❌ |  |  |
-| abbreviation | varchar(20) |  | ❌ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| name | varchar(50) |  | ❌ |  |  |  |
+| abbreviation | varchar(20) |  | ❌ |  |  |  |
 <!-- db:end -->
 
