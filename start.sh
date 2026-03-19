@@ -13,6 +13,29 @@ if [ ! -f "main.py" ]; then
     exit 1
 fi
 
+# 如果已有后台服务在运行，先停止
+if [ -f ".backend.pid" ] || [ -f ".frontend.pid" ]; then
+    echo "🛑 检测到已有服务 PID，正在尝试停止..."
+fi
+
+if [ -f ".backend.pid" ]; then
+    EXISTING_BACKEND_PID=$(cat .backend.pid)
+    if kill -0 "$EXISTING_BACKEND_PID" 2>/dev/null; then
+        echo "   停止后端进程 PID: $EXISTING_BACKEND_PID"
+        kill "$EXISTING_BACKEND_PID"
+    fi
+    rm -f .backend.pid
+fi
+
+if [ -f ".frontend.pid" ]; then
+    EXISTING_FRONTEND_PID=$(cat .frontend.pid)
+    if kill -0 "$EXISTING_FRONTEND_PID" 2>/dev/null; then
+        echo "   停止前端进程 PID: $EXISTING_FRONTEND_PID"
+        kill "$EXISTING_FRONTEND_PID"
+    fi
+    rm -f .frontend.pid
+fi
+
 # 启动后端
 echo "🚀 启动后端服务..."
 if [ ! -d "venv" ]; then

@@ -73,6 +73,9 @@ pip install -r requirements.txt
 ├── check_and_fix_db.py
 ├── create_inventory.sql
 ├── create_semi_product_inventory.sql
+├── database_dev.sql
+├── dessert_pos_remaining_columns.tsv
+├── foreign_keys.tsv
 ├── frontend_sys
 │   ├── README.md
 │   ├── Ramen_Shop_Inventory_Management_PRD_FE.md
@@ -271,6 +274,7 @@ pip install -r requirements.txt
 ├── requirements.txt
 ├── start.sh
 ├── stop.sh
+├── tables.txt
 ├── test_admin_setup.sh
 ├── test_ingredients.sh
 ├── test_inventory.sh
@@ -278,7 +282,7 @@ pip install -r requirements.txt
 ├── test_purchase_orders.sh
 └── update_db_structure.py
 
-183 directories, 72 files
+183 directories, 76 files
 ```
 <!-- tree:end -->
 
