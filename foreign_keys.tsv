@@ -1,0 +1,39 @@
+child_table	child_column	parent_table	parent_column	CONSTRAINT_NAME	UPDATE_RULE	DELETE_RULE
+category_units	category_id	categories	id	fk_category_units_category	NO ACTION	NO ACTION
+category_units	unit_id	units	id	fk_category_units_unit	NO ACTION	NO ACTION
+ingredient_allergens	allergen_id	allergens	id	fk_ing_allergen_allergen	NO ACTION	NO ACTION
+ingredient_allergens	ingredient_id	ingredients	id	fk_ing_allergen_ingredient	NO ACTION	NO ACTION
+ingredients	category_id	categories	id	fk_ingredients_category	NO ACTION	NO ACTION
+ingredients	unit_id	units	id	fk_ingredient_unit	NO ACTION	NO ACTION
+inventory	ingredient_id	ingredients	id	fk_inventory_ingredient	NO ACTION	NO ACTION
+inventory	unit_id	units	id	fk_inventory_unit	NO ACTION	NO ACTION
+modifier_product	modifier_id	modifiers	id	fk_mp_modifier	CASCADE	RESTRICT
+modifier_product	product_id	products	id	fk_mp_product	CASCADE	RESTRICT
+order_items	order_id	orders	id	fk_oi_order	CASCADE	CASCADE
+order_items	order_id	orders	id	fk_order_items_order	NO ACTION	CASCADE
+order_items	product_id	products	id	fk_oi_product	CASCADE	RESTRICT
+order_items	product_id	products	id	fk_order_items_product	NO ACTION	NO ACTION
+orders	user_id	users	id	fk_orders_user	CASCADE	SET NULL
+purchase_order_items	ingredient_id	ingredients	id	fk_poi_ingredient	NO ACTION	NO ACTION
+purchase_order_items	purchase_order_id	purchase_orders	id	fk_poi_po	NO ACTION	NO ACTION
+purchase_order_items	unit_id	units	id	fk_poi_unit	NO ACTION	NO ACTION
+recipe_ingredients	ingredient_id	ingredients	id	fk_recipe_ing_ingredient	NO ACTION	NO ACTION
+recipe_ingredients	recipe_id	recipes	id	fk_recipe_ing_recipe	NO ACTION	NO ACTION
+recipe_ingredients	unit_id	units	id	fk_recipe_ing_unit	NO ACTION	NO ACTION
+role_permissions	permission_id	permissions	id	fk_rp_perm	NO ACTION	NO ACTION
+role_permissions	permission_id	permissions	id	role_permissions_ibfk_2	NO ACTION	NO ACTION
+role_permissions	role_id	roles	id	fk_rp_role	NO ACTION	NO ACTION
+role_permissions	role_id	roles	id	role_permissions_ibfk_1	NO ACTION	NO ACTION
+semi_finished_product_ingredients	ingredient_id	ingredients	id	fk_sfp_ing_ingredient	NO ACTION	NO ACTION
+semi_finished_product_ingredients	semi_finished_product_id	semi_finished_products	id	fk_sfp_ing_sfp	NO ACTION	NO ACTION
+semi_finished_product_ingredients	unit_id	units	id	fk_sfp_ing_unit	NO ACTION	NO ACTION
+semi_finished_products	unit_id	units	id	fk_semi_product_unit	NO ACTION	NO ACTION
+semi_product_inventory	semi_product_id	semi_finished_products	id	semi_product_inventory_ibfk_1	NO ACTION	NO ACTION
+semi_product_inventory	unit_id	units	id	semi_product_inventory_ibfk_2	NO ACTION	NO ACTION
+staff_roles	role_id	roles	id	fk_sr_role	NO ACTION	NO ACTION
+staff_roles	role_id	roles	id	staff_roles_ibfk_2	NO ACTION	NO ACTION
+staff_roles	staff_id	staffs	id	fk_sr_staff	NO ACTION	CASCADE
+staff_roles	staff_id	staffs	id	staff_roles_ibfk_1	NO ACTION	NO ACTION
+user_allergens	user_id	Users	id	fk_user_allergens_user	NO ACTION	CASCADE
+User_Allergies	allergy_id	Allergies	id	user_allergies_ibfk_2	NO ACTION	CASCADE
+User_Allergies	user_id	Users	id	user_allergies_ibfk_1	NO ACTION	CASCADE

@@ -40,38 +40,22 @@ class ModifierProduct(Base):
     modifier_id = Column(BigInteger, primary_key=True)
     created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
 
-class Ingredient(Base):
-    __tablename__ = "ingredients"
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    name = Column(String(120), nullable=False)
-    unit = Column(String(16), nullable=False)
-    quantity_remaining = Column(DECIMAL(12, 3), nullable=False, server_default=text("0.000"))
-    safety_stock = Column(DECIMAL(12, 3), nullable=False, server_default=text("0.000"))
-    status = Column(TINYINT, nullable=False, server_default=text("1"))
-    created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
-    updated_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
+# NOTE: Ingredient, SemiFinished, and related models have been moved to backend/models/inventory.py
+# to support the new normalized inventory system with categories, units, and allergens.
+# The old simplified models are commented out to avoid table name conflicts.
 
-class SemiFinished(Base):
-    __tablename__ = "semifinished"
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    name = Column(String(120), nullable=False)
-    unit = Column(String(16), nullable=False)
-    quantity_remaining = Column(DECIMAL(12, 3), nullable=False, server_default=text("0.000"))
-    safety_stock = Column(DECIMAL(12, 3), nullable=False, server_default=text("0.000"))
-    status = Column(TINYINT, nullable=False, server_default=text("1"))
-    created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
-    updated_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
+# class Ingredient(Base):
+#     __tablename__ = "ingredients"  # Now defined in inventory.py as IngredientRaw
+#     ...
 
-class ProductIngredient(Base):
-    __tablename__ = "product_ingredients"
-    product_id = Column(BigInteger, primary_key=True)
-    ingredient_id = Column(BigInteger, primary_key=True)
-    amount_per_unit = Column(DECIMAL(12, 3), nullable=False)
-    created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
+# class SemiFinished(Base):
+#     __tablename__ = "semifinished"  # Now defined in inventory.py as SemiFinishedProduct
+#     ...
 
-class ProductSemiFinished(Base):
-    __tablename__ = "product_semifinished"
-    product_id = Column(BigInteger, primary_key=True)
-    semifinished_id = Column(BigInteger, primary_key=True)
-    amount_per_unit = Column(DECIMAL(12, 3), nullable=False)
-    created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
+# class ProductIngredient(Base):
+#     __tablename__ = "product_ingredients"
+#     ...
+
+# class ProductSemiFinished(Base):
+#     __tablename__ = "product_semifinished"
+#     ...

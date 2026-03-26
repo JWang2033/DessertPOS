@@ -1,116 +1,115 @@
 .
-├── IMPLEMENTATION_SUMMARY.md
-├── ORDER_API_DOCUMENTATION.md
+├── ADMIN_SETUP_API.md
+├── FRONTEND_GUIDE.md
+├── PURCHASE_ORDER_FIX_INSTRUCTIONS.md
 ├── README.md
-├── TEST_COMMANDS.md
-├── TWILIO_SETUP.md
+├── add_threshold_to_semi_products.sql
+├── add_total_amount_columns.sql
+├── add_unit_to_ingredients.sql
+├── add_vendor_to_items.sql
 ├── backend
 │   ├── __init__.py
 │   ├── config.py
 │   ├── crud
 │   │   ├── admin_catalog_crud.py
+│   │   ├── admin_setup_crud.py
 │   │   ├── catalog_crud.py
-│   │   ├── order_crud.py
+│   │   ├── ingredient_crud.py
+│   │   ├── inventory_crud.py
+│   │   ├── product_crud.py
+│   │   ├── purchase_order_crud.py
 │   │   ├── staff_crud.py
 │   │   └── user_crud.py
 │   ├── database.py
 │   ├── models
 │   │   ├── catalog.py
 │   │   ├── ingredient_allergy.py
-│   │   ├── order.py
+│   │   ├── inventory.py
 │   │   ├── role.py
 │   │   ├── staff.py
 │   │   └── user.py
 │   ├── routers
 │   │   ├── __init__.py
-│   │   ├── admin_catalog_router.py
-│   │   ├── auth.py
-│   │   ├── catalog_router.py
-│   │   ├── order_router.py
-│   │   ├── protected.py
-│   │   ├── rbac_router.py
-│   │   ├── staff_router.py
-│   │   ├── test.py
-│   │   └── user_router.py
+│   │   ├── admin_setup_router.py
+│   │   ├── ingredient_router.py
+│   │   ├── inventory_router.py
+│   │   ├── product_router.py
+│   │   └── purchase_order_router.py
 │   ├── schemas
 │   │   ├── __init__.py
 │   │   ├── catalog_schemas.py
-│   │   ├── order_schemas.py
+│   │   ├── inventory_schemas.py
 │   │   ├── staff_schemas.py
 │   │   └── user_schemas.py
 │   └── utils
 │       ├── auth_dependencies.py
 │       ├── security.py
-│       └── sms_service.py
-├── create-table-template.sql
-├── create_allergen_tables.sql
-├── frontend
-│   ├── FRONTEND_GUIDE.md
+│       └── unit_converter.py
+├── backend.log
+├── check_and_fix_db.py
+├── create_inventory.sql
+├── create_semi_product_inventory.sql
+├── database_dev.sql
+├── dessert_pos_remaining_columns.tsv
+├── foreign_keys.tsv
+├── frontend_sys
 │   ├── README.md
+│   ├── Ramen_Shop_Inventory_Management_PRD_FE.md
 │   ├── eslint.config.js
 │   ├── index.html
 │   ├── node_modules
-│   │   ├── @alloc
+│   │   ├── @ant-design
 │   │   ├── @babel
-│   │   ├── @emnapi
+│   │   ├── @emotion
+│   │   ├── @esbuild
 │   │   ├── @eslint
 │   │   ├── @eslint-community
 │   │   ├── @humanfs
 │   │   ├── @humanwhocodes
 │   │   ├── @jridgewell
-│   │   ├── @napi-rs
-│   │   ├── @nodelib
-│   │   ├── @oxc-project
+│   │   ├── @rc-component
 │   │   ├── @rolldown
-│   │   ├── @tailwindcss
-│   │   ├── @tybys
+│   │   ├── @rollup
 │   │   ├── @types
+│   │   ├── @typescript-eslint
 │   │   ├── @vitejs
 │   │   ├── acorn
 │   │   ├── acorn-jsx
 │   │   ├── ajv
 │   │   ├── ansi-styles
-│   │   ├── any-promise
-│   │   ├── anymatch
-│   │   ├── arg
+│   │   ├── antd
 │   │   ├── argparse
 │   │   ├── asynckit
-│   │   ├── autoprefixer
 │   │   ├── axios
 │   │   ├── balanced-match
 │   │   ├── baseline-browser-mapping
-│   │   ├── binary-extensions
 │   │   ├── brace-expansion
-│   │   ├── braces
 │   │   ├── browserslist
 │   │   ├── call-bind-apply-helpers
 │   │   ├── callsites
-│   │   ├── camelcase-css
 │   │   ├── caniuse-lite
 │   │   ├── chalk
-│   │   ├── chokidar
+│   │   ├── clsx
 │   │   ├── color-convert
 │   │   ├── color-name
 │   │   ├── combined-stream
-│   │   ├── commander
+│   │   ├── compute-scroll-into-view
 │   │   ├── concat-map
 │   │   ├── convert-source-map
+│   │   ├── cookie
 │   │   ├── cross-spawn
-│   │   ├── cssesc
 │   │   ├── csstype
+│   │   ├── dayjs
 │   │   ├── debug
 │   │   ├── deep-is
 │   │   ├── delayed-stream
-│   │   ├── detect-libc
-│   │   ├── didyoumean
-│   │   ├── dlv
 │   │   ├── dunder-proto
 │   │   ├── electron-to-chromium
-│   │   ├── enhanced-resolve
 │   │   ├── es-define-property
 │   │   ├── es-errors
 │   │   ├── es-object-atoms
 │   │   ├── es-set-tostringtag
+│   │   ├── esbuild
 │   │   ├── escalade
 │   │   ├── escape-string-regexp
 │   │   ├── eslint
@@ -124,19 +123,15 @@
 │   │   ├── estraverse
 │   │   ├── esutils
 │   │   ├── fast-deep-equal
-│   │   ├── fast-glob
 │   │   ├── fast-json-stable-stringify
 │   │   ├── fast-levenshtein
-│   │   ├── fastq
 │   │   ├── fdir
 │   │   ├── file-entry-cache
-│   │   ├── fill-range
 │   │   ├── find-up
 │   │   ├── flat-cache
 │   │   ├── flatted
 │   │   ├── follow-redirects
 │   │   ├── form-data
-│   │   ├── fraction.js
 │   │   ├── fsevents
 │   │   ├── function-bind
 │   │   ├── gensync
@@ -144,8 +139,8 @@
 │   │   ├── get-proto
 │   │   ├── glob-parent
 │   │   ├── globals
+│   │   ├── globrex
 │   │   ├── gopd
-│   │   ├── graceful-fs
 │   │   ├── has-flag
 │   │   ├── has-symbols
 │   │   ├── has-tostringtag
@@ -155,131 +150,112 @@
 │   │   ├── ignore
 │   │   ├── import-fresh
 │   │   ├── imurmurhash
-│   │   ├── is-binary-path
-│   │   ├── is-core-module
 │   │   ├── is-extglob
 │   │   ├── is-glob
-│   │   ├── is-number
+│   │   ├── is-mobile
 │   │   ├── isexe
-│   │   ├── jiti
 │   │   ├── js-tokens
 │   │   ├── js-yaml
 │   │   ├── jsesc
 │   │   ├── json-buffer
 │   │   ├── json-schema-traverse
 │   │   ├── json-stable-stringify-without-jsonify
+│   │   ├── json2mq
 │   │   ├── json5
 │   │   ├── keyv
 │   │   ├── levn
-│   │   ├── lightningcss
-│   │   ├── lightningcss-darwin-arm64
-│   │   ├── lilconfig
-│   │   ├── lines-and-columns
 │   │   ├── locate-path
 │   │   ├── lodash.merge
 │   │   ├── lru-cache
-│   │   ├── magic-string
+│   │   ├── lucide-react
 │   │   ├── math-intrinsics
-│   │   ├── merge2
-│   │   ├── micromatch
 │   │   ├── mime-db
 │   │   ├── mime-types
 │   │   ├── minimatch
 │   │   ├── ms
-│   │   ├── mz
 │   │   ├── nanoid
 │   │   ├── natural-compare
 │   │   ├── node-releases
-│   │   ├── normalize-path
-│   │   ├── normalize-range
-│   │   ├── object-assign
-│   │   ├── object-hash
 │   │   ├── optionator
 │   │   ├── p-limit
 │   │   ├── p-locate
 │   │   ├── parent-module
 │   │   ├── path-exists
 │   │   ├── path-key
-│   │   ├── path-parse
 │   │   ├── picocolors
 │   │   ├── picomatch
-│   │   ├── pify
-│   │   ├── pirates
 │   │   ├── postcss
-│   │   ├── postcss-import
-│   │   ├── postcss-js
-│   │   ├── postcss-load-config
-│   │   ├── postcss-nested
-│   │   ├── postcss-selector-parser
-│   │   ├── postcss-value-parser
 │   │   ├── prelude-ls
 │   │   ├── proxy-from-env
 │   │   ├── punycode
-│   │   ├── queue-microtask
 │   │   ├── react
 │   │   ├── react-dom
+│   │   ├── react-is
 │   │   ├── react-refresh
-│   │   ├── read-cache
-│   │   ├── readdirp
-│   │   ├── resolve
+│   │   ├── react-router
+│   │   ├── react-router-dom
 │   │   ├── resolve-from
-│   │   ├── reusify
-│   │   ├── rolldown
-│   │   ├── run-parallel
+│   │   ├── rollup
 │   │   ├── scheduler
+│   │   ├── scroll-into-view-if-needed
 │   │   ├── semver
+│   │   ├── set-cookie-parser
 │   │   ├── shebang-command
 │   │   ├── shebang-regex
 │   │   ├── source-map-js
+│   │   ├── string-convert
 │   │   ├── strip-json-comments
-│   │   ├── sucrase
+│   │   ├── stylis
 │   │   ├── supports-color
-│   │   ├── supports-preserve-symlinks-flag
-│   │   ├── tailwindcss
-│   │   ├── tapable
-│   │   ├── thenify
-│   │   ├── thenify-all
+│   │   ├── throttle-debounce
 │   │   ├── tinyglobby
-│   │   ├── to-regex-range
-│   │   ├── ts-interface-checker
-│   │   ├── tslib
+│   │   ├── ts-api-utils
+│   │   ├── tsconfck
 │   │   ├── type-check
+│   │   ├── typescript
+│   │   ├── typescript-eslint
+│   │   ├── undici-types
 │   │   ├── update-browserslist-db
 │   │   ├── uri-js
-│   │   ├── util-deprecate
 │   │   ├── vite
+│   │   ├── vite-tsconfig-paths
 │   │   ├── which
 │   │   ├── word-wrap
 │   │   ├── yallist
-│   │   ├── yaml
 │   │   ├── yocto-queue
 │   │   ├── zod
 │   │   └── zod-validation-error
 │   ├── package-lock.json
 │   ├── package.json
-│   ├── postcss.config.js
 │   ├── public
 │   │   └── vite.svg
 │   ├── src
-│   │   ├── App.css
-│   │   ├── App.jsx
+│   │   ├── App.tsx
 │   │   ├── assets
 │   │   ├── components
-│   │   ├── index.css
-│   │   ├── main.jsx
-│   │   └── services
-│   ├── tailwind.config.js
-│   └── vite.config.js
+│   │   ├── main.tsx
+│   │   ├── pages
+│   │   ├── services
+│   │   ├── types.ts
+│   │   └── utils
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
+├── init_inventory_db.py
 ├── main.py
-├── order_allergen_tables_redis_cart.sql
-├── order_cart_allergen_tables.sql
 ├── order_tables.sql
 ├── product_tables.sql
 ├── project_structure.txt
-├── quick_test_orders.py
 ├── requirements.txt
-├── test_order_api.sh
-├── test_order_api_simple.sh
+├── start.sh
+├── stop.sh
+├── tables.txt
+├── test_admin_setup.sh
+├── test_ingredients.sh
+├── test_inventory.sh
+├── test_products.sh
+├── test_purchase_orders.sh
 └── update_db_structure.py
 
-219 directories, 64 files
+183 directories, 76 files

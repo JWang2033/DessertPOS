@@ -23,118 +23,117 @@ pip install -r requirements.txt
 <!-- tree:start -->
 ```
 .
-├── IMPLEMENTATION_SUMMARY.md
-├── ORDER_API_DOCUMENTATION.md
+├── ADMIN_SETUP_API.md
+├── FRONTEND_GUIDE.md
+├── PURCHASE_ORDER_FIX_INSTRUCTIONS.md
 ├── README.md
-├── TEST_COMMANDS.md
-├── TWILIO_SETUP.md
+├── add_threshold_to_semi_products.sql
+├── add_total_amount_columns.sql
+├── add_unit_to_ingredients.sql
+├── add_vendor_to_items.sql
 ├── backend
 │   ├── __init__.py
 │   ├── config.py
 │   ├── crud
 │   │   ├── admin_catalog_crud.py
+│   │   ├── admin_setup_crud.py
 │   │   ├── catalog_crud.py
-│   │   ├── order_crud.py
+│   │   ├── ingredient_crud.py
+│   │   ├── inventory_crud.py
+│   │   ├── product_crud.py
+│   │   ├── purchase_order_crud.py
 │   │   ├── staff_crud.py
 │   │   └── user_crud.py
 │   ├── database.py
 │   ├── models
 │   │   ├── catalog.py
 │   │   ├── ingredient_allergy.py
-│   │   ├── order.py
+│   │   ├── inventory.py
 │   │   ├── role.py
 │   │   ├── staff.py
 │   │   └── user.py
 │   ├── routers
 │   │   ├── __init__.py
-│   │   ├── admin_catalog_router.py
-│   │   ├── auth.py
-│   │   ├── catalog_router.py
-│   │   ├── order_router.py
-│   │   ├── protected.py
-│   │   ├── rbac_router.py
-│   │   ├── staff_router.py
-│   │   ├── test.py
-│   │   └── user_router.py
+│   │   ├── admin_setup_router.py
+│   │   ├── ingredient_router.py
+│   │   ├── inventory_router.py
+│   │   ├── product_router.py
+│   │   └── purchase_order_router.py
 │   ├── schemas
 │   │   ├── __init__.py
 │   │   ├── catalog_schemas.py
-│   │   ├── order_schemas.py
+│   │   ├── inventory_schemas.py
 │   │   ├── staff_schemas.py
 │   │   └── user_schemas.py
 │   └── utils
 │       ├── auth_dependencies.py
 │       ├── security.py
-│       └── sms_service.py
-├── create-table-template.sql
-├── create_allergen_tables.sql
-├── frontend
-│   ├── FRONTEND_GUIDE.md
+│       └── unit_converter.py
+├── backend.log
+├── check_and_fix_db.py
+├── create_inventory.sql
+├── create_semi_product_inventory.sql
+├── database_dev.sql
+├── dessert_pos_remaining_columns.tsv
+├── foreign_keys.tsv
+├── frontend_sys
 │   ├── README.md
+│   ├── Ramen_Shop_Inventory_Management_PRD_FE.md
 │   ├── eslint.config.js
 │   ├── index.html
 │   ├── node_modules
-│   │   ├── @alloc
+│   │   ├── @ant-design
 │   │   ├── @babel
-│   │   ├── @emnapi
+│   │   ├── @emotion
+│   │   ├── @esbuild
 │   │   ├── @eslint
 │   │   ├── @eslint-community
 │   │   ├── @humanfs
 │   │   ├── @humanwhocodes
 │   │   ├── @jridgewell
-│   │   ├── @napi-rs
-│   │   ├── @nodelib
-│   │   ├── @oxc-project
+│   │   ├── @rc-component
 │   │   ├── @rolldown
-│   │   ├── @tailwindcss
-│   │   ├── @tybys
+│   │   ├── @rollup
 │   │   ├── @types
+│   │   ├── @typescript-eslint
 │   │   ├── @vitejs
 │   │   ├── acorn
 │   │   ├── acorn-jsx
 │   │   ├── ajv
 │   │   ├── ansi-styles
-│   │   ├── any-promise
-│   │   ├── anymatch
-│   │   ├── arg
+│   │   ├── antd
 │   │   ├── argparse
 │   │   ├── asynckit
-│   │   ├── autoprefixer
 │   │   ├── axios
 │   │   ├── balanced-match
 │   │   ├── baseline-browser-mapping
-│   │   ├── binary-extensions
 │   │   ├── brace-expansion
-│   │   ├── braces
 │   │   ├── browserslist
 │   │   ├── call-bind-apply-helpers
 │   │   ├── callsites
-│   │   ├── camelcase-css
 │   │   ├── caniuse-lite
 │   │   ├── chalk
-│   │   ├── chokidar
+│   │   ├── clsx
 │   │   ├── color-convert
 │   │   ├── color-name
 │   │   ├── combined-stream
-│   │   ├── commander
+│   │   ├── compute-scroll-into-view
 │   │   ├── concat-map
 │   │   ├── convert-source-map
+│   │   ├── cookie
 │   │   ├── cross-spawn
-│   │   ├── cssesc
 │   │   ├── csstype
+│   │   ├── dayjs
 │   │   ├── debug
 │   │   ├── deep-is
 │   │   ├── delayed-stream
-│   │   ├── detect-libc
-│   │   ├── didyoumean
-│   │   ├── dlv
 │   │   ├── dunder-proto
 │   │   ├── electron-to-chromium
-│   │   ├── enhanced-resolve
 │   │   ├── es-define-property
 │   │   ├── es-errors
 │   │   ├── es-object-atoms
 │   │   ├── es-set-tostringtag
+│   │   ├── esbuild
 │   │   ├── escalade
 │   │   ├── escape-string-regexp
 │   │   ├── eslint
@@ -148,19 +147,15 @@ pip install -r requirements.txt
 │   │   ├── estraverse
 │   │   ├── esutils
 │   │   ├── fast-deep-equal
-│   │   ├── fast-glob
 │   │   ├── fast-json-stable-stringify
 │   │   ├── fast-levenshtein
-│   │   ├── fastq
 │   │   ├── fdir
 │   │   ├── file-entry-cache
-│   │   ├── fill-range
 │   │   ├── find-up
 │   │   ├── flat-cache
 │   │   ├── flatted
 │   │   ├── follow-redirects
 │   │   ├── form-data
-│   │   ├── fraction.js
 │   │   ├── fsevents
 │   │   ├── function-bind
 │   │   ├── gensync
@@ -168,8 +163,8 @@ pip install -r requirements.txt
 │   │   ├── get-proto
 │   │   ├── glob-parent
 │   │   ├── globals
+│   │   ├── globrex
 │   │   ├── gopd
-│   │   ├── graceful-fs
 │   │   ├── has-flag
 │   │   ├── has-symbols
 │   │   ├── has-tostringtag
@@ -179,134 +174,115 @@ pip install -r requirements.txt
 │   │   ├── ignore
 │   │   ├── import-fresh
 │   │   ├── imurmurhash
-│   │   ├── is-binary-path
-│   │   ├── is-core-module
 │   │   ├── is-extglob
 │   │   ├── is-glob
-│   │   ├── is-number
+│   │   ├── is-mobile
 │   │   ├── isexe
-│   │   ├── jiti
 │   │   ├── js-tokens
 │   │   ├── js-yaml
 │   │   ├── jsesc
 │   │   ├── json-buffer
 │   │   ├── json-schema-traverse
 │   │   ├── json-stable-stringify-without-jsonify
+│   │   ├── json2mq
 │   │   ├── json5
 │   │   ├── keyv
 │   │   ├── levn
-│   │   ├── lightningcss
-│   │   ├── lightningcss-darwin-arm64
-│   │   ├── lilconfig
-│   │   ├── lines-and-columns
 │   │   ├── locate-path
 │   │   ├── lodash.merge
 │   │   ├── lru-cache
-│   │   ├── magic-string
+│   │   ├── lucide-react
 │   │   ├── math-intrinsics
-│   │   ├── merge2
-│   │   ├── micromatch
 │   │   ├── mime-db
 │   │   ├── mime-types
 │   │   ├── minimatch
 │   │   ├── ms
-│   │   ├── mz
 │   │   ├── nanoid
 │   │   ├── natural-compare
 │   │   ├── node-releases
-│   │   ├── normalize-path
-│   │   ├── normalize-range
-│   │   ├── object-assign
-│   │   ├── object-hash
 │   │   ├── optionator
 │   │   ├── p-limit
 │   │   ├── p-locate
 │   │   ├── parent-module
 │   │   ├── path-exists
 │   │   ├── path-key
-│   │   ├── path-parse
 │   │   ├── picocolors
 │   │   ├── picomatch
-│   │   ├── pify
-│   │   ├── pirates
 │   │   ├── postcss
-│   │   ├── postcss-import
-│   │   ├── postcss-js
-│   │   ├── postcss-load-config
-│   │   ├── postcss-nested
-│   │   ├── postcss-selector-parser
-│   │   ├── postcss-value-parser
 │   │   ├── prelude-ls
 │   │   ├── proxy-from-env
 │   │   ├── punycode
-│   │   ├── queue-microtask
 │   │   ├── react
 │   │   ├── react-dom
+│   │   ├── react-is
 │   │   ├── react-refresh
-│   │   ├── read-cache
-│   │   ├── readdirp
-│   │   ├── resolve
+│   │   ├── react-router
+│   │   ├── react-router-dom
 │   │   ├── resolve-from
-│   │   ├── reusify
-│   │   ├── rolldown
-│   │   ├── run-parallel
+│   │   ├── rollup
 │   │   ├── scheduler
+│   │   ├── scroll-into-view-if-needed
 │   │   ├── semver
+│   │   ├── set-cookie-parser
 │   │   ├── shebang-command
 │   │   ├── shebang-regex
 │   │   ├── source-map-js
+│   │   ├── string-convert
 │   │   ├── strip-json-comments
-│   │   ├── sucrase
+│   │   ├── stylis
 │   │   ├── supports-color
-│   │   ├── supports-preserve-symlinks-flag
-│   │   ├── tailwindcss
-│   │   ├── tapable
-│   │   ├── thenify
-│   │   ├── thenify-all
+│   │   ├── throttle-debounce
 │   │   ├── tinyglobby
-│   │   ├── to-regex-range
-│   │   ├── ts-interface-checker
-│   │   ├── tslib
+│   │   ├── ts-api-utils
+│   │   ├── tsconfck
 │   │   ├── type-check
+│   │   ├── typescript
+│   │   ├── typescript-eslint
+│   │   ├── undici-types
 │   │   ├── update-browserslist-db
 │   │   ├── uri-js
-│   │   ├── util-deprecate
 │   │   ├── vite
+│   │   ├── vite-tsconfig-paths
 │   │   ├── which
 │   │   ├── word-wrap
 │   │   ├── yallist
-│   │   ├── yaml
 │   │   ├── yocto-queue
 │   │   ├── zod
 │   │   └── zod-validation-error
 │   ├── package-lock.json
 │   ├── package.json
-│   ├── postcss.config.js
 │   ├── public
 │   │   └── vite.svg
 │   ├── src
-│   │   ├── App.css
-│   │   ├── App.jsx
+│   │   ├── App.tsx
 │   │   ├── assets
 │   │   ├── components
-│   │   ├── index.css
-│   │   ├── main.jsx
-│   │   └── services
-│   ├── tailwind.config.js
-│   └── vite.config.js
+│   │   ├── main.tsx
+│   │   ├── pages
+│   │   ├── services
+│   │   ├── types.ts
+│   │   └── utils
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
+├── init_inventory_db.py
 ├── main.py
-├── order_allergen_tables_redis_cart.sql
-├── order_cart_allergen_tables.sql
 ├── order_tables.sql
 ├── product_tables.sql
 ├── project_structure.txt
-├── quick_test_orders.py
 ├── requirements.txt
-├── test_order_api.sh
-├── test_order_api_simple.sh
+├── start.sh
+├── stop.sh
+├── tables.txt
+├── test_admin_setup.sh
+├── test_ingredients.sh
+├── test_inventory.sh
+├── test_products.sh
+├── test_purchase_orders.sh
 └── update_db_structure.py
 
-219 directories, 64 files
+183 directories, 76 files
 ```
 <!-- tree:end -->
 
@@ -315,279 +291,177 @@ pip install -r requirements.txt
 
 ### `allergens` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(100) |  | ❌ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| name | varchar(100) |  | ❌ |  |  |  |
 
 ---
 
 ### `categories` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(50) |  | ❌ |  |  |
-| tag | varchar(100) |  | ✅ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| name | varchar(50) |  | ❌ |  |  |  |
+| tag | varchar(100) |  | ✅ |  |  |  |
 
 ---
 
 ### `category_units` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| category_id | bigint unsigned | ✅ | ❌ |  |  |
-| unit_id | bigint unsigned | ✅ | ❌ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| category_id | bigint unsigned | ✅ | ❌ |  |  | categories.id |
+| unit_id | bigint unsigned | ✅ | ❌ |  |  | units.id |
 
 ---
 
 ### `ingredient_allergens` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| ingredient_id | bigint unsigned | ✅ | ❌ |  |  |
-| allergen_id | bigint unsigned | ✅ | ❌ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| ingredient_id | bigint unsigned | ✅ | ❌ |  |  | ingredients.id |
+| allergen_id | bigint unsigned | ✅ | ❌ |  |  | allergens.id |
+
+---
+
+### `ingredient_store_config` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| store_id | bigint unsigned |  | ❌ |  |  | stores.id |
+| ingredient_id | bigint unsigned |  | ❌ |  |  | ingredients.id |
+| threshold | decimal(10,2) |  | ✅ |  | Low-stock threshold / reorder point |  |
+| is_active | tinyint(1) |  | ❌ | 1 | Whether this ingredient is used in this store |  |
+| preferred_unit_id | bigint unsigned |  | ✅ |  | Preferred unit for this store | units.id |
 
 ---
 
 ### `ingredients` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(100) |  | ❌ |  |  |
-| category_id | bigint unsigned |  | ❌ |  |  |
-| brand | varchar(100) |  | ✅ |  |  |
-| threshold | decimal(10,2) |  | ✅ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| name | varchar(100) |  | ❌ |  |  |  |
+| category_id | bigint unsigned |  | ❌ |  |  | categories.id |
+| unit_id | bigint unsigned |  | ✅ |  |  | units.id |
+| brand | varchar(100) |  | ✅ |  |  |  |
 
 ---
 
 ### `inventory` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| ingredient_id | bigint unsigned |  | ❌ |  |  |
-| unit_id | bigint unsigned |  | ❌ |  |  |
-| standard_qty | decimal(10,2) |  | ✅ |  |  |
-| actual_qty | decimal(10,2) |  | ✅ |  |  |
-| location | varchar(100) |  | ❌ |  |  |
-| update_time | datetime |  | ❌ |  |  |
-| restock_needed | tinyint(1) |  | ❌ | 0 |  |
-
----
-
-### `modifier_product` 表结构
-
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| product_id | bigint unsigned | ✅ | ❌ |  |  |
-| modifier_id | bigint unsigned | ✅ | ❌ |  |  |
-| created_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
-
----
-
-### `modifiers` 表结构
-
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(100) |  | ❌ |  |  |
-| type | varchar(50) |  | ❌ |  |  |
-| price | decimal(10,2) |  | ❌ | 0.00 |  |
-| is_active | tinyint |  | ❌ | 1 |  |
-| created_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
-| updated_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
-
----
-
-### `order_items` 表结构
-
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| order_id | bigint unsigned |  | ❌ |  |  |
-| product_id | bigint unsigned |  | ❌ |  |  |
-| quantity | int unsigned |  | ❌ | 1 |  |
-| modifiers | json |  | ✅ |  | 如 ["少冰","去糖"] |
-| price | decimal(10,2) |  | ❌ |  |  |
-| created_at | datetime |  | ❌ | CURRENT_TIMESTAMP |  |
-
----
-
-### `orders` 表结构
-
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| order_number | varchar(32) |  | ❌ |  |  |
-| user_id | int |  | ✅ |  |  |
-| pickup_number | varchar(16) |  | ✅ |  | 取餐号 |
-| created_at | datetime |  | ❌ | CURRENT_TIMESTAMP |  |
-| updated_at | datetime |  | ❌ | CURRENT_TIMESTAMP |  |
-| payment_method | enum('cash','card','wechat') |  | ❌ |  |  |
-| dine_option | enum('take_out','dine_in') |  | ❌ |  |  |
-| total_price | decimal(10,2) |  | ❌ | 0.00 |  |
-| order_status | enum('IP','Completed','Refunded','preorder') |  | ❌ | IP |  |
-
----
-
-### `permissions` 表结构
-
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint | ✅ | ❌ |  |  |
-| code | varchar(128) |  | ❌ |  |  |
-| name | varchar(128) |  | ❌ |  |  |
-| description | varchar(255) |  | ✅ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| ingredient_id | bigint unsigned |  | ❌ |  |  | ingredients.id |
+| unit_id | bigint unsigned |  | ❌ |  |  | units.id |
+| standard_qty | decimal(10,2) |  | ✅ |  |  |  |
+| actual_qty | decimal(10,2) |  | ✅ |  |  |  |
+| location | varchar(100) |  | ❌ |  |  |  |
+| update_time | datetime |  | ❌ |  |  |  |
+| restock_needed | tinyint(1) |  | ❌ | 0 |  |  |
 
 ---
 
 ### `purchase_order_items` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| purchase_order_id | bigint unsigned |  | ❌ |  |  |
-| ingredient_id | bigint unsigned |  | ❌ |  |  |
-| unit_id | bigint unsigned |  | ❌ |  |  |
-| quantity | decimal(10,2) |  | ❌ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| purchase_order_id | bigint unsigned |  | ❌ |  |  | purchase_orders.id |
+| ingredient_id | bigint unsigned |  | ❌ |  |  | ingredients.id |
+| unit_id | bigint unsigned |  | ❌ |  |  | units.id |
+| quantity | decimal(10,2) |  | ❌ |  |  |  |
+| vendor | varchar(100) |  | ✅ |  | Vendor for this specific ingredient |  |
+| total_amount | decimal(10,2) |  | ✅ | 0.00 | Total amount for this purchase item in dollars |  |
 
 ---
 
 ### `purchase_orders` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| po_code | varchar(50) |  | ❌ |  |  |
-| order_date | date |  | ❌ |  |  |
-| store_id | varchar(10) |  | ❌ |  |  |
-| vendor | varchar(100) |  | ✅ |  |  |
-
----
-
-### `recipe_ingredients` 表结构
-
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| recipe_id | bigint unsigned | ✅ | ❌ |  |  |
-| ingredient_id | bigint unsigned | ✅ | ❌ |  |  |
-| unit_id | bigint unsigned |  | ❌ |  |  |
-| quantity | decimal(10,2) |  | ❌ |  |  |
-
----
-
-### `recipes` 表结构
-
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(100) |  | ❌ |  |  |
-| type | varchar(50) |  | ❌ |  |  |
-
----
-
-### `role_permissions` 表结构
-
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| role_id | bigint | ✅ | ❌ |  |  |
-| permission_id | bigint | ✅ | ❌ |  |  |
-
----
-
-### `roles` 表结构
-
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint | ✅ | ❌ |  |  |
-| code | varchar(64) |  | ❌ |  |  |
-| name | varchar(128) |  | ❌ |  |  |
-| description | varchar(255) |  | ✅ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| po_code | varchar(50) |  | ❌ |  |  |  |
+| order_date | date |  | ❌ |  |  |  |
+| store_id | varchar(10) |  | ❌ |  |  |  |
+| total_amount | decimal(10,2) |  | ✅ | 0.00 | Total amount for the entire purchase order in dollars |  |
 
 ---
 
 ### `semi_finished_product_ingredients` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| semi_finished_product_id | bigint unsigned | ✅ | ❌ |  |  |
-| ingredient_id | bigint unsigned | ✅ | ❌ |  |  |
-| unit_id | bigint unsigned |  | ❌ |  |  |
-| quantity | decimal(10,2) |  | ❌ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| semi_finished_product_id | bigint unsigned | ✅ | ❌ |  |  | semi_finished_products.id |
+| ingredient_id | bigint unsigned | ✅ | ❌ |  |  | ingredients.id |
+| unit_id | bigint unsigned |  | ❌ |  |  | units.id |
+| quantity | decimal(10,2) |  | ❌ |  |  |  |
 
 ---
 
 ### `semi_finished_products` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(100) |  | ❌ |  |  |
-| prep_time_hours | decimal(5,2) |  | ❌ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| name | varchar(100) |  | ❌ |  |  |  |
+| prep_time_hours | decimal(5,2) |  | ❌ |  |  |  |
+| unit_id | bigint unsigned |  | ✅ |  |  | units.id |
 
 ---
 
-### `staff_roles` 表结构
+### `semi_product_inventory` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| staff_id | int | ✅ | ❌ |  |  |
-| role_id | bigint | ✅ | ❌ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| semi_product_id | bigint unsigned |  | ❌ |  |  | semi_finished_products.id |
+| unit_id | bigint unsigned |  | ❌ |  |  | units.id |
+| standard_qty | decimal(10,2) |  | ✅ |  | Standard quantity to maintain |  |
+| actual_qty | decimal(10,2) |  | ✅ |  | Current actual quantity in stock |  |
+| location | varchar(100) |  | ❌ |  | Storage location |  |
+| update_time | datetime |  | ❌ |  | Last update timestamp |  |
+| restock_needed | int |  | ❌ | 0 | 1 if restock needed, 0 otherwise |  |
 
 ---
 
-### `staffs` 表结构
+### `semi_product_store_config` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | int | ✅ | ❌ |  |  |
-| username | varchar(50) |  | ❌ |  |  |
-| password | varchar(255) |  | ❌ |  |  |
-| full_name | varchar(100) |  | ❌ |  |  |
-| phone | varchar(20) |  | ❌ |  |  |
-| email | varchar(100) |  | ❌ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| store_id | bigint unsigned |  | ❌ |  |  | stores.id |
+| semi_product_id | bigint unsigned |  | ❌ |  |  | semi_finished_products.id |
+| threshold | decimal(10,2) |  | ✅ |  | Low-stock threshold / reorder point |  |
+| is_active | tinyint(1) |  | ❌ | 1 | Whether this semi-finished product is used in this store |  |
+| preferred_unit_id | bigint unsigned |  | ✅ |  | Preferred unit for this store | units.id |
+
+---
+
+### `stores` 表结构
+
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| store_code | varchar(20) |  | ❌ |  |  |  |
+| name | varchar(100) |  | ❌ |  |  |  |
+| address | varchar(255) |  | ✅ |  |  |  |
+| phone | varchar(30) |  | ✅ |  |  |  |
+| is_active | tinyint(1) |  | ❌ | 1 |  |  |
+| created_at | datetime |  | ❌ | CURRENT_TIMESTAMP |  |  |
 
 ---
 
 ### `units` 表结构
 
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| name | varchar(50) |  | ❌ |  |  |
-| abbreviation | varchar(20) |  | ❌ |  |  |
-
----
-
-### `user_allergens` 表结构
-
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | bigint unsigned | ✅ | ❌ |  |  |
-| user_id | int |  | ❌ |  |  |
-| allergen | varchar(50) |  | ❌ |  |  |
-| created_at | timestamp |  | ❌ | CURRENT_TIMESTAMP |  |
-
----
-
-### `User_Allergies` 表结构
-
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| user_id | int | ✅ | ❌ |  |  |
-| allergy_id | int | ✅ | ❌ |  |  |
-
----
-
-### `Users` 表结构
-
-| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 |
-|--------|------|------|------|--------|------|
-| id | int | ✅ | ❌ |  |  |
-| username | varchar(50) |  | ❌ |  |  |
-| prefer_name | varchar(50) |  | ✅ |  |  |
-| phone_number | varchar(20) |  | ❌ |  |  |
+| 字段名 | 类型 | 主键 | 可空 | 默认值 | 注释 | Reference |
+|--------|------|------|------|--------|------|-----------|
+| id | bigint unsigned | ✅ | ❌ |  |  |  |
+| name | varchar(50) |  | ❌ |  |  |  |
+| abbreviation | varchar(20) |  | ❌ |  |  |  |
 <!-- db:end -->
 
